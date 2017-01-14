@@ -1,0 +1,15 @@
+en:
+  elasticsearch:
+    resouces:
+      document_factory:
+        unknown_type_error:
+          message: "Unknown document type for '%{type}'!"
+      indexable:
+        null_index_error:
+          message: "Index cannot be nil!"
+      queryable:
+        null_client_error:
+          message: "No client set. Cannot query!"
+      typeable:
+        null_type_error:
+          message: "Type cannot be nil!"
