@@ -20,9 +20,10 @@ module Elasticsearch
 
         def define_attributes(*attributes)
           new_attributes = attributes.collect(&:to_sym) - self.attributes.collect(&:to_sym)
-          @attributes.concat(new_attributes)
-          define_attribute_helpers(new_attributes)
+          self.attributes.concat(new_attributes).tap { |a| define_attribute_helpers(new_attributes) }
         end
+
+        private
 
         def define_attribute_helpers(attributes)
           attributes.each do |attribute|
