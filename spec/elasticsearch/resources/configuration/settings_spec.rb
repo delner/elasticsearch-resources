@@ -10,11 +10,11 @@ describe Elasticsearch::Resources::Configuration::Settings do
   end
 
   describe 'instance' do
+    subject { instance }
+
+    let(:instance) { described_class.new }
+
     describe 'behavior' do
-      subject { instance }
-
-      let(:instance) { described_class.new }
-
       describe '#initialize' do
         it { is_expected.to be_a_kind_of(described_class) }
       end

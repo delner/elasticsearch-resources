@@ -10,12 +10,12 @@ describe Elasticsearch::Resources::Configuration::Cluster do
   end
 
   describe 'instance' do
+    subject { instance }
+
+    let(:instance) { described_class.new(id: id) }
+    let(:id) { double('id') }
+
     describe 'behavior' do
-      subject { instance }
-
-      let(:instance) { described_class.new(id: id) }
-      let(:id) { double('id') }
-
       describe '#initialize' do
         let(:instance) do
           described_class.new(

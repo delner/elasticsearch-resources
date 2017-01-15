@@ -10,13 +10,13 @@ describe Elasticsearch::Resources::Configuration::Index do
   end
 
   describe 'instance' do
+    subject { instance }
+
+    let(:instance) { described_class.new(id: id, cluster: cluster) }
+    let(:id) { double('id') }
+    let(:cluster) { instance_double(Elasticsearch::Resources::Configuration::Cluster) }
+
     describe 'behavior' do
-      subject { instance }
-
-      let(:instance) { described_class.new(id: id, cluster: cluster) }
-      let(:id) { double('id') }
-      let(:cluster) { instance_double(Elasticsearch::Resources::Configuration::Cluster) }
-
       describe '#initialize' do
         let(:instance) do
           described_class.new(

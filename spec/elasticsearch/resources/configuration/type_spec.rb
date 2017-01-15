@@ -10,13 +10,13 @@ describe Elasticsearch::Resources::Configuration::Type do
   end
 
   describe 'instance' do
+    subject { instance }
+
+    let(:instance) { described_class.new(id: id, index: index) }
+    let(:id) { double('id') }
+    let(:index) { instance_double(Elasticsearch::Resources::Configuration::Index) }
+
     describe 'behavior' do
-      subject { instance }
-
-      let(:instance) { described_class.new(id: id, index: index) }
-      let(:id) { double('id') }
-      let(:index) { instance_double(Elasticsearch::Resources::Configuration::Index) }
-
       describe '#initialize' do
         let(:instance) do
           described_class.new(
@@ -25,6 +25,7 @@ describe Elasticsearch::Resources::Configuration::Type do
             name: name
           )
         end
+
         let(:name) { double('name') }
 
         context 'returns a Type with' do
