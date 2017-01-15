@@ -17,7 +17,7 @@ module Elasticsearch
 
         def type(id)
           types.find { |t| t.id == id.to_sym }.tap do |t|
-            yield(t) if block_given?
+            yield(t) if block_given? && !t.nil?
           end
         end
 
