@@ -13,14 +13,16 @@ module Elasticsearch
 
       module ClassMethods
         def configuration
-          @configuration ||= defined?(super) ? super.dup : {}
+          @configuration ||= superclass.respond_to?(:configuration) ? superclass.configuration.dup : Configuration.new
         end
 
-        def define_configuration(id: nil, class_name: nil, default: nil)
-          @configuration = configuration.dup.tap do |c|
-            c.merge!(id: id) unless id.nil?
-            c.merge!(class_name: class_name) unless class_name.nil?
-            c.merge!(default: default) unless default.nil?
+        protected
+
+        def define_configuration(options = {})
+          @configuration = configuration.tap do |c|
+            options.each do |name, value|
+              c.send("#{name.to_s}=", value) if c.respond_to?("#{name.to_s}=") && !value.nil?
+            end
           end
         end
       end
@@ -29,15 +31,25 @@ module Elasticsearch
         attr_reader :settings
 
         def default_settings
-          default_expression = self.class.configuration[:default]
+          default_expression = self.class.configuration.default
           default_expression ? self.instance_exec(&default_expression) : nil
         end
 
         def configure(options = {}, &block)
-          @settings = default_settings&.dup || self.class.configuration[:class_name].new(**options)
-          @settings.tap do |s|
+          @settings = default_settings&.dup || self.class.configuration.class_name&.new(**options)
+          settings.tap do |s|
             yield(s) if block_given?
           end
+        end
+      end
+
+      class Configuration
+        ATTRIBUTES = [:id, :class_name, :default].freeze
+
+        attr_accessor *ATTRIBUTES
+
+        def ==(obj)
+          ATTRIBUTES.all? { |a| obj.send(a) == self.send(a) }
         end
       end
     end
