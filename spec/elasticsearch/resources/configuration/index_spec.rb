@@ -27,7 +27,7 @@ describe Elasticsearch::Resources::Configuration::Index do
         end
         let(:name) { double('name') }
 
-        context 'returns a Type with' do
+        context 'returns an Index with' do
           describe '#id' do
             subject { super().id }
             it { is_expected.to eq(id) }
