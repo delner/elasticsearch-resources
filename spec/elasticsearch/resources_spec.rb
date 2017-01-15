@@ -1,11 +1,15 @@
-require "spec_helper"
+# frozen_string_literal: true
+require 'spec_helper'
 
 describe Elasticsearch::Resources do
-  it "has a version number" do
-    expect(Elasticsearch::Resources::VERSION).not_to be nil
-  end
+  subject { described_class }
 
-  it "does something useful" do
-    expect(false).to eq(true)
+  describe 'class' do
+    describe 'behavior' do
+      describe '#locales_paths' do
+        subject { super().locales_paths }
+        it { is_expected.to have(1).items }
+      end
+    end
   end
 end

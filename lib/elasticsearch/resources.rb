@@ -1,4 +1,5 @@
 # Load library dependencies
+require 'i18n'
 require 'elasticsearch'
 
 # Load classes and modules
@@ -22,6 +23,11 @@ require 'elasticsearch/resources/document'
 
 module Elasticsearch
   module Resources
-    # Your code goes here...
+    def self.locales_paths
+      Dir[File.join(File.expand_path('../resources', __FILE__), '**/locales/*.yml')]
+    end
   end
 end
+
+# Load i18n locales
+I18n.load_path += Elasticsearch::Resources.locales_paths
