@@ -15,6 +15,10 @@ module Elasticsearch
       end
 
       module InstanceMethods
+        def client
+          raise NotImplementedError.new(I18n.t('elasticsearch.resources.queryable.client.not_implemented_error'))
+        end
+
         def query(action, params = {})
           raise NullClientError.new if client.nil?
           response = client.send(action, **params)
