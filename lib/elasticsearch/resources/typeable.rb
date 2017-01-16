@@ -17,10 +17,6 @@ module Elasticsearch
       module InstanceMethods
         attr_reader :type
 
-        def index
-          type.index
-        end
-
         protected
 
         def type=(type)

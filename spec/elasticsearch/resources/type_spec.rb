@@ -32,15 +32,14 @@ describe Elasticsearch::Resources::Type do
 
     let(:instance) { described_class.new(index: index, &block) }
     let(:block) { Proc.new { } }
-    let(:client) { instance_double(Elasticsearch::Transport::Client, indices: indices_client) }
-    let(:indices_client) { instance_double(Elasticsearch::API::Indices::IndicesClient) }
+    let(:client) { instance_double(Elasticsearch::Transport::Client) }
     let(:index) { instance_double(Elasticsearch::Resources::Index, name: index_name, client: client, settings: index_settings) }
     let(:index_name) { 'test_index' }
     let(:index_settings) { instance_double(Elasticsearch::Resources::Configuration::Index, type: nil) }
     let(:name) { 'test_type' }
 
     before(:each) { allow(instance.settings).to receive(:name).and_return(name) }
-    before(:each) { allow(index_settings).to receive(:type).and_return(nil) } # .with(described_class.send(:configuration).id)
+    before(:each) { allow(index_settings).to receive(:type).and_return(nil) }
 
     describe 'behavior' do
       describe '#initialize' do
@@ -74,6 +73,24 @@ describe Elasticsearch::Resources::Type do
         before(:each) { expect(client).to receive(action).with(**params) }
 
         it { is_expected.to be(response) }
+      end
+
+      describe '#search' do
+        subject { super().search(body, **options) }
+        let(:body) { double(Hash) }
+        let(:options) { { test: true } }
+        let(:result) { double('result') }
+        before(:each) { expect(instance).to receive(:query).with(:search, body: body, test: true).and_return(result) }
+        it { is_expected.to be(result) }
+      end
+
+      describe '#count' do
+        subject { super().count(body, **options) }
+        let(:body) { double(Hash) }
+        let(:options) { { test: true } }
+        let(:result) { double('result') }
+        before(:each) { expect(instance).to receive(:query).with(:count, body: body, test: true).and_return(result) }
+        it { is_expected.to be(result) }
       end
 
       described_class::ACTIONS.each do |action|
