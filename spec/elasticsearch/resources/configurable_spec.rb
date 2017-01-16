@@ -92,9 +92,8 @@ describe Elasticsearch::Resources::Configurable do
             expect(test_class.configuration).to eq(configuration_class.new)
             is_expected.to eq(test_class_configuration)
             expect(test_class.configuration).to eq(test_class_configuration)
-            # TODO: This is broken for some reason?
-            #       Seems to get the final state as initial state...
-            #       Don't know why...
+            # TODO: This is broken because it seems that test class is not
+            #       reset between examples, which creates a polluted initial state.
             # expect { subject }
             #   .to change { test_class.configuration }
             #   .from(configuration_class.new)
@@ -136,9 +135,8 @@ describe Elasticsearch::Resources::Configurable do
                   expect(test_class.configuration).to eq(parent_class_configuration)
                   is_expected.to eq(test_class_configuration)
                   expect(test_class.configuration).to eq(test_class_configuration)
-                  # TODO: This is broken for some reason?
-                  #       Seems to get the final state as initial state...
-                  #       Don't know why...
+                  # TODO: This is broken because it seems that test class is not
+                  #       reset between examples, which creates a polluted initial state.
                   # expect { subject }
                   #   .to change { test_class.configuration }
                   #   .from(parent_class_configuration)

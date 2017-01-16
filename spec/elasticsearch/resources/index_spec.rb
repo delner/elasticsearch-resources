@@ -21,7 +21,7 @@ describe Elasticsearch::Resources::Index do
     let(:name) { 'test_index' }
 
     before(:each) { allow(instance.settings).to receive(:name).and_return(name) }
-    before(:each) { allow(cluster_settings).to receive(:index).and_return(nil) } # .with(described_class.send(:configuration).id)
+    before(:each) { allow(cluster_settings).to receive(:index).and_return(nil) }
 
     describe 'behavior' do
       describe '#initialize' do
