@@ -27,7 +27,11 @@ module Elasticsearch
 
       class NullTypeError < ArgumentError
         def initialize
-          super(I18n.t('elasticsearch.resources.typeable.null_type_error.message'))
+          super(message)
+        end
+
+        def message
+          I18n.t('elasticsearch.resources.typeable.null_type_error.message')
         end
       end
     end

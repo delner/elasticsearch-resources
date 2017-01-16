@@ -1,6 +1,6 @@
 module Elasticsearch
   module Resources
-    module Resource
+    module Nameable
       def self.included(base)
         base.extend(ClassMethods)
         base.include(InstanceMethods)
@@ -12,31 +12,20 @@ module Elasticsearch
       end
 
       module ClassMethods
+        attr_reader :default_name
+
+        def define_default_name(name)
+          @default_name = name&.to_s
+        end
       end
 
       module InstanceMethods
-        def find_cluster
-          nil
+        def name
+          self.class.default_name
         end
 
-        def find_index(index: nil)
-          nil
-        end
-
-        def find_type(index: nil, type: nil)
-          nil
-        end
-
-        def setup!
-          nil
-        end
-
-        def populate!
-          nil
-        end
-
-        def teardown!
-          nil
+        def matches_name?(name)
+          name.to_s == self.name.to_s
         end
       end
     end

@@ -14,6 +14,8 @@ describe Elasticsearch::Resources::Queryable do
     describe 'class' do
       subject { test_class }
 
+      it { expect(subject < Elasticsearch::Resources::Resource).to be true }
+
       describe 'behavior' do
       end
     end
@@ -50,7 +52,7 @@ describe Elasticsearch::Resources::Queryable do
                 before(:each) do
                   expect(client).to receive(:send).with(action, **params).and_return(response)
                   expect(Elasticsearch::Resources::ResponseFactory).to receive(:new)
-                    .with(context: instance, action: action, response: response)
+                    .with(resource: instance, action: action, response: response)
                     .and_return(factory)
                   expect(factory).to receive(:build).and_return(factory_response)
                 end
@@ -59,19 +61,6 @@ describe Elasticsearch::Resources::Queryable do
               end
             end
           end
-        end
-
-        describe '#find_index' do
-          subject { super().find_index(index: index) }
-          let(:index) { double('index') }
-          it { is_expected.to be nil }
-        end
-
-        describe '#find_type' do
-          subject { super().find_type(index: index, type: type) }
-          let(:index) { double('index') }
-          let(:type) { double('type') }
-          it { is_expected.to be nil }
         end
       end
     end

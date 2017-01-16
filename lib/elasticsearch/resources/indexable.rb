@@ -27,7 +27,11 @@ module Elasticsearch
 
       class NullIndexError < ArgumentError
         def initialize
-          super(I18n.t('elasticsearch.resources.indexable.null_index_error.message'))
+          super(message)
+        end
+
+        def message
+          I18n.t('elasticsearch.resources.indexable.null_index_error.message')
         end
       end
     end

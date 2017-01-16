@@ -2,7 +2,10 @@ module Elasticsearch
   module Resources
     class Type
       include Resource
+      include Queryable
+      include Configurable
       include Indexable
+      include Nameable
 
       define_configuration \
         class_name: Configuration::Type,
@@ -21,12 +24,16 @@ module Elasticsearch
         configure(id: self.class.configuration.id, index: index.settings, &block)
       end
 
+      def cluster
+        index.cluster
+      end
+
       def client
         index.client
       end
 
       def name
-        settings.name
+        settings.name || super
       end
 
       def query(action, options = {})
@@ -60,12 +67,16 @@ module Elasticsearch
         end
       end
 
-      def find_index(index:)
-        self.index.find_index(index: index)
+      def find_cluster
+        self.cluster
+      end
+
+      def find_index(index: nil)
+        self.index
       end
 
       def find_type(index: nil, type:)
-        type.to_s == name.to_s ? self : nil
+        matches_name?(type) ? self : nil
       end
 
       def document_class

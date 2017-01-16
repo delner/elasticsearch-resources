@@ -19,8 +19,7 @@ describe Elasticsearch::Resources::Configuration::Cluster do
       describe '#initialize' do
         let(:instance) do
           described_class.new(
-            id: id,
-            host: host
+            id: id
           )
         end
         let(:host) { double('host') }
@@ -30,11 +29,6 @@ describe Elasticsearch::Resources::Configuration::Cluster do
             subject { super().id }
             it { is_expected.to eq(id) }
           end
-
-          describe '#host' do
-            subject { super().host }
-            it { is_expected.to eq(host) }
-          end
         end
       end
 
@@ -42,9 +36,63 @@ describe Elasticsearch::Resources::Configuration::Cluster do
         it { is_expected.to respond_to(:id) }
       end
 
+      describe '#name' do
+        subject { super().name }
+        it { is_expected.to eq(nil) }
+      end
+
+      describe '#name=' do
+        subject { super().name = name }
+
+        context 'given' do
+          context 'nil' do
+            let(:name) { nil }
+            it { expect { subject }.to raise_error(Elasticsearch::Resources::Configuration::Cluster::NullNameError) }
+          end
+
+          context 'a String' do
+            let(:name) { 'test' }
+
+            context 'then #name' do
+              subject { super(); instance.name }
+              it { is_expected.to eq(name.to_s) }
+            end
+          end
+
+          context 'a Symbol' do
+            let(:name) { :test }
+
+            context 'then #name' do
+              subject { super(); instance.name }
+              it { is_expected.to eq(name.to_s) }
+            end
+          end
+        end
+      end
+
       describe '#host' do
-        it { is_expected.to respond_to(:host) }
-        it { is_expected.to respond_to(:host=) }
+        subject { super().host }
+        it { is_expected.to eq('127.0.0.1:9200') }
+      end
+
+      describe '#host=' do
+        subject { super().host = host }
+
+        context 'given' do
+          context 'nil' do
+            let(:host) { nil }
+            it { expect { subject }.to raise_error(Elasticsearch::Resources::Configuration::Cluster::NullHostError) }
+          end
+
+          context 'a String' do
+            let(:host) { 'test' }
+
+            context 'then #host' do
+              subject { super(); instance.host }
+              it { is_expected.to eq(host) }
+            end
+          end
+        end
       end
 
       describe '#client' do

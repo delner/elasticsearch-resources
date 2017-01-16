@@ -33,7 +33,8 @@ describe Elasticsearch::Resources::Type do
     let(:instance) { described_class.new(index: index, &block) }
     let(:block) { Proc.new { } }
     let(:client) { instance_double(Elasticsearch::Transport::Client) }
-    let(:index) { instance_double(Elasticsearch::Resources::Index, name: index_name, client: client, settings: index_settings) }
+    let(:cluster) { instance_double(Elasticsearch::Resources::Cluster) }
+    let(:index) { instance_double(Elasticsearch::Resources::Index, name: index_name, client: client, settings: index_settings, cluster: cluster) }
     let(:index_name) { 'test_index' }
     let(:index_settings) { instance_double(Elasticsearch::Resources::Configuration::Index, type: nil) }
     let(:name) { 'test_type' }
@@ -51,6 +52,11 @@ describe Elasticsearch::Resources::Type do
         end
       end
 
+      describe '#cluster' do
+        subject { super().cluster }
+        it { is_expected.to be(cluster) }
+      end
+
       describe '#client' do
         subject { super().client }
         it { is_expected.to be(client) }
@@ -58,8 +64,18 @@ describe Elasticsearch::Resources::Type do
 
       describe '#name' do
         subject { super().name }
-        before(:each) { expect(instance.settings).to receive(:name).and_return(name) }
-        it { is_expected.to be(name) }
+
+        context 'when the settings' do
+          context 'defines a name' do
+            before(:each) { expect(instance.settings).to receive(:name).and_return(name) }
+            it { is_expected.to be(name) }
+          end
+
+          context 'doesn\'t define a name' do
+            before(:each) { expect(instance.settings).to receive(:name).and_return(nil) }
+            it { is_expected.to eq(instance.class.default_name) }
+          end
+        end
       end
 
       describe '#query' do
@@ -103,9 +119,13 @@ describe Elasticsearch::Resources::Type do
         end
       end
 
+      describe '#find_cluster' do
+        subject { super().find_cluster }
+        it { is_expected.to be(cluster) }
+      end
+
       describe '#find_index' do
         subject { super().find_index(index: index_name) }
-        before(:each) { expect(index).to receive(:find_index).with(index: index_name).and_return(index) }
         it { is_expected.to be(index) }
       end
 

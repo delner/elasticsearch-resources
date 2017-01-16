@@ -15,8 +15,9 @@ describe Elasticsearch::Resources::Document do
     let(:instance) { described_class.new(type: type, id: id, attributes: attributes) }
     let(:type) { instance_double(Elasticsearch::Resources::Type, index: index, name: type_name, client: client) }
     let(:type_name) { 'test_type' }
-    let(:index) { instance_double(Elasticsearch::Resources::Index, name: index_name) }
+    let(:index) { instance_double(Elasticsearch::Resources::Index, cluster: cluster, name: index_name) }
     let(:index_name) { 'test_index' }
+    let(:cluster) { instance_double(Elasticsearch::Resources::Cluster) }
     let(:client) { instance_double(Elasticsearch::Transport::Client) }
     let(:id) { 'test_id' }
     let(:attributes) { { 'test' => true } }
@@ -41,14 +42,19 @@ describe Elasticsearch::Resources::Document do
         end
       end
 
-      describe '#client' do
-        subject { super().client }
-        it { is_expected.to be(client) }
+      describe '#cluster' do
+        subject { super().cluster }
+        it { is_expected.to be(cluster) }
       end
 
       describe '#index' do
         subject { super().index }
         it { is_expected.to be(index) }
+      end
+
+      describe '#client' do
+        subject { super().client }
+        it { is_expected.to be(client) }
       end
 
       describe '#query' do
@@ -82,6 +88,11 @@ describe Elasticsearch::Resources::Document do
           before(:each) { expect(instance).to receive(:query).with(action, test: true).and_return(result) }
           it { is_expected.to be(result) }
         end
+      end
+
+      describe '#find_cluster' do
+        subject { super().find_cluster }
+        it { is_expected.to be(cluster) }
       end
 
       describe '#find_index' do
