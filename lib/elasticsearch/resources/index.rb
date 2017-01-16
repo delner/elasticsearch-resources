@@ -5,13 +5,13 @@ module Elasticsearch
 
       define_configuration \
         class_name: Configuration::Index,
-        default: -> { cluster.settings.index(self.class.configuration[:id]) }
+        default: -> { cluster.settings.index(self.class.configuration.id) }
 
       attr_reader :cluster
 
       def initialize(cluster:, &block)
         self.cluster = cluster
-        configure(id: self.class.configuration[:id], cluster: cluster.settings, &block)
+        configure(id: self.class.configuration.id, cluster: cluster.settings, &block)
       end
 
       def client
@@ -36,32 +36,16 @@ module Elasticsearch
         end
       end
 
-      def repositories
-        types
-      end
-
       def types
         []
       end
 
-      def exists?
-        client.indices.exists? index: name
-      end
-
-      def create
-        client.indices.create index: name
-      end
-
-      def put_mapping(options = {})
+      def query_index(action, options = {})
         params = {
           index: name
         }.merge(options)
 
-         client.indices.put_mapping(params)
-      end
-
-      def delete
-        client.indices.delete index: name
+        client.indices.send(action, **params)
       end
 
       def query(action, options = {})
@@ -70,6 +54,22 @@ module Elasticsearch
         }.merge(options)
 
         super(action, **params)
+      end
+
+      def exists?
+        query_index(:exists?)
+      end
+
+      def create
+        query_index(:create)
+      end
+
+      def put_mapping(options = {})
+        query_index(:put_mapping, options)
+      end
+
+      def delete
+        query_index(:delete)
       end
 
       def search(body, options = {})
@@ -89,7 +89,7 @@ module Elasticsearch
       end
 
       def find_index(index: nil)
-        index == name ? self : nil
+        index.to_s == name.to_s ? self : nil
       end
 
       def find_type(index: nil, type:)
