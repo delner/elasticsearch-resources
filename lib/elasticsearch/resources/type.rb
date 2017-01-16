@@ -6,7 +6,7 @@ module Elasticsearch
 
       define_configuration \
         class_name: Configuration::Type,
-        default: -> { index.settings.type(self.class.configuration[:id]) }
+        default: -> { index.settings.type(self.class.configuration.id) }
 
       ACTIONS = [
         :exists?,
@@ -18,7 +18,7 @@ module Elasticsearch
 
       def initialize(index:, &block)
         self.index = index
-        configure(id: self.class.configuration[:id], index: index.settings, &block)
+        configure(id: self.class.configuration.id, index: index.settings, &block)
       end
 
       def client
@@ -60,12 +60,12 @@ module Elasticsearch
         end
       end
 
-      def find_index(index: nil)
-        index.find_index(index: index)
+      def find_index(index:)
+        self.index.find_index(index: index)
       end
 
-      def find_type(index: nil, type: nil)
-        type == name ? self : nil
+      def find_type(index: nil, type:)
+        type.to_s == name.to_s ? self : nil
       end
 
       def document_class
@@ -78,11 +78,11 @@ module Elasticsearch
 
       protected
 
-      attr_writer :document_class
-
       def self.define_document_class(document_class)
         @document_class = document_class
       end
+
+      define_document_class Elasticsearch::Resources::Document
     end
   end
 end
