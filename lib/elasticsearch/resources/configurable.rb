@@ -6,11 +6,6 @@ module Elasticsearch
         base.include(InstanceMethods)
       end
 
-      def self.prepended(base)
-        base.extend(ClassMethods)
-        base.prepend(InstanceMethods)
-      end
-
       module ClassMethods
         def configuration
           @configuration ||= superclass.respond_to?(:configuration) ? superclass.configuration.dup : Configuration.new

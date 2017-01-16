@@ -7,12 +7,6 @@ module Elasticsearch
         base.include(InstanceMethods)
       end
 
-      def self.prepended(base)
-        base.prepend(Resource)
-        base.extend(ClassMethods)
-        base.prepend(InstanceMethods)
-      end
-
       module ClassMethods
       end
 
