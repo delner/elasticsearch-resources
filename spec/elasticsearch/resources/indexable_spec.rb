@@ -31,13 +31,13 @@ describe Elasticsearch::Resources::Indexable do
         describe '#index=' do
           subject { super().send(:index=, index) }
 
-          context 'given an ID that is' do
+          context 'given an index that is' do
             context 'nil' do
               let(:index) { nil }
               it { expect { subject }.to raise_error(Elasticsearch::Resources::Indexable::NullIndexError) }
             end
 
-            context 'a String' do
+            context 'an Elasticsearch::Resources::Index' do
               let(:index) { instance_double(Elasticsearch::Resources::Index) }
               it { is_expected.to eq(index) }
               it { expect { subject }.to change { instance.index }.from(nil).to(index) }
