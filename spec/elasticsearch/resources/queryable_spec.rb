@@ -44,13 +44,15 @@ describe Elasticsearch::Resources::Queryable do
               context 'an Elasticsearch::Transport::Client' do
                 let(:client) { instance_double(Elasticsearch::Transport::Client) }
                 let(:response) { double('response') }
+                let(:factory) { instance_double(Elasticsearch::Resources::ResponseFactory) }
                 let(:factory_response) { double('factory response') }
 
                 before(:each) do
                   expect(client).to receive(:send).with(action, **params).and_return(response)
-                  expect(Elasticsearch::Resources::ResponseFactory).to receive(:build!)
+                  expect(Elasticsearch::Resources::ResponseFactory).to receive(:new)
                     .with(context: instance, action: action, response: response)
-                    .and_return(factory_response)
+                    .and_return(factory)
+                  expect(factory).to receive(:build).and_return(factory_response)
                 end
 
                 it { is_expected.to be(factory_response) }

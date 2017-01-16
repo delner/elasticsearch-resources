@@ -3,7 +3,7 @@ en:
     resouces:
       document_factory:
         unknown_type_error:
-          message: "Unknown document type for '%{type}'!"
+          message: "Unknown document type for '%{index}/%{type}'!"
       indexable:
         null_index_error:
           message: "Index cannot be nil!"

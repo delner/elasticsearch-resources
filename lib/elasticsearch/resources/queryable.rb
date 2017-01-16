@@ -22,7 +22,7 @@ module Elasticsearch
         def query(action, params = {})
           raise NullClientError.new if client.nil?
           response = client.send(action, **params)
-          ResponseFactory.build!(context: self, action: action, response: response)
+          ResponseFactory.new(context: self, action: action, response: response).build
         end
 
         def find_index(index: nil)
