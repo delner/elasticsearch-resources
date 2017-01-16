@@ -1,11 +1,18 @@
 module Elasticsearch
   module Resources
     class DocumentFactory
-      def build(type:, document:)
+      attr_reader :type, :content
+
+      def initialize(type:, content:)
+        @type = type
+        @content = content
+      end
+
+      def build
         type.document_class.new(
           type: type,
-          id: document['_id'],
-          attributes: document['_source']
+          id: content['_id'],
+          attributes: content['_source']
         )
       end
     end
