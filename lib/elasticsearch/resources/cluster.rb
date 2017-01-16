@@ -25,6 +25,22 @@ module Elasticsearch
         []
       end
 
+      def search(body, options = {})
+        params = {
+          body: body
+        }.merge(options)
+
+        query(:search, params)
+      end
+
+      def count(body, options = {})
+        params = {
+          body: body
+        }.merge(options)
+
+        query(:count, params)
+      end
+
       def find_cluster
         self
       end

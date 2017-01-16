@@ -35,6 +35,24 @@ describe Elasticsearch::Resources::Cluster do
         it { is_expected.to be_empty }
       end
 
+      describe '#search' do
+        subject { super().search(body, **options) }
+        let(:body) { double(Hash) }
+        let(:options) { { test: true } }
+        let(:result) { double('result') }
+        before(:each) { expect(instance).to receive(:query).with(:search, body: body, test: true).and_return(result) }
+        it { is_expected.to be(result) }
+      end
+
+      describe '#count' do
+        subject { super().count(body, **options) }
+        let(:body) { double(Hash) }
+        let(:options) { { test: true } }
+        let(:result) { double('result') }
+        before(:each) { expect(instance).to receive(:query).with(:count, body: body, test: true).and_return(result) }
+        it { is_expected.to be(result) }
+      end
+
       describe '#find_cluster' do
         subject { super().find_cluster }
         it { is_expected.to be(instance) }
