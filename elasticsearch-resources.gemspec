@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["david@davidelner.com"]
 
   spec.summary       = %q{Access well-known Elasticsearch indexes like resources.}
-  spec.description   = %q{Allows you to strongly-type ES types and query them more easily.}
+  spec.description   = %q{Allows you to strongly-type Elasticsearch types and query them more easily.}
   spec.homepage      = "http://davidelner.com"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
