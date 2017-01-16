@@ -1,7 +1,7 @@
 module Elasticsearch
   module Resources
-    module DocumentFactory
-      def self.build!(type:, document:)
+    class DocumentFactory
+      def build(type:, document:)
         type.document_class.new(
           type: type,
           id: document['_id'],
