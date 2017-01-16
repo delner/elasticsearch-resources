@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Access well-known Elasticsearch indexes like resources.}
   spec.description   = %q{Allows you to strongly-type Elasticsearch types and query them more easily.}
-  spec.homepage      = "http://davidelner.com"
+  spec.homepage      = "https://github.com/delner/elasticsearch-resources"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
