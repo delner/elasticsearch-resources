@@ -8,6 +8,8 @@ en:
         null_index_error:
           message: "Index cannot be nil!"
       queryable:
+        client:
+          not_implemented_error: 'This resource does not implement #client.'
         null_client_error:
           message: "No client set. Cannot query!"
       typeable:
