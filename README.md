@@ -1,36 +1,61 @@
-# Elasticsearch::Resources
+Elasticsearch::Resources
+========================
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/elasticsearch/resources`. To experiment with that code, run `bin/console` for an interactive prompt.
+[![Build Status](https://travis-ci.org/delner/elasticsearch-resources.svg?branch=master)](https://travis-ci.org/delner/elasticsearch-resources) ![Gem Version](https://img.shields.io/gem/v/elasticsearch-resources.svg?maxAge=2592000)
+###### *For Ruby 2.3+*
 
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
+`Elasticsearch::Resources` is a wrapper for the [Elasticsearch gem](https://github.com/elastic/elasticsearch-ruby) that provides a strongly typed interface for accessing your indexes, types, and documents.
 
 ```ruby
-gem 'elasticsearch-resources'
+# Search an index: e.g. search { index: 'film', body: { query: { ... } } }
+documents = film.search({ query: { match: { title: 'Tron' } } })
+documents # [#<Movie @title='Tron'>, #<Documentary @title='Making Tron'>]
+
+# Get a specific document: e.g. get { index: 'film', type: 'movie', id: 'tron' }
+document = movies.get(id: 'tron') # #<Movie @title='Tron'>
+document.id # => 'tron'
+document.attributes # => { 'title' => 'Tron' }
+document.title # => 'Tron'
 ```
 
-And then execute:
+### Installation
 
-    $ bundle
+##### If you're not using Bundler...
 
-Or install it yourself as:
+Install the gem via:
 
-    $ gem install elasticsearch-resources
+```
+gem install elasticsearch-resources
+```
 
-## Usage
+Then require it into your application with:
 
-TODO: Write usage instructions here
+```
+require 'elasticsearch/resources'
+```
+
+##### If you're using Bundler...
+
+Add the gem to your Gemfile:
+
+```
+gem 'elasticsearch/resources'
+```
+
+And then `bundle install` to install the gem and its dependencies.
+
+### Usage
+
+###### TODO: Add explanation of basic usage
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Install dependencies using `bundle install`. Run tests using `bundle exec rspec`
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/elasticsearch-resources.
+Bug reports and pull requests are welcome on GitHub at https://github.com/delner/elasticsearch-resources.
 
+## License
+
+The gem is available as open source under the terms of the [Apache 2.0 License](https://raw.githubusercontent.com/delner/elasticsearch-resources/master/LICENSE).
