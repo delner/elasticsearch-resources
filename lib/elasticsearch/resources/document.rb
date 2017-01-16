@@ -16,6 +16,10 @@ module Elasticsearch
         type.client
       end
 
+      def index
+        type.index
+      end
+
       def query(action, options = {})
         params = {
           index: index.name,
@@ -49,11 +53,11 @@ module Elasticsearch
       end
 
       def find_index(index: nil)
-        type.index.find_index(index: index)
+        self.index
       end
 
       def find_type(index: nil, type: nil)
-        type.find_type(index: index, type: type)
+        self.type
       end
     end
   end
