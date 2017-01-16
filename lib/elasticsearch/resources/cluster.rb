@@ -6,7 +6,7 @@ module Elasticsearch
       define_configuration class_name: Configuration::Cluster
 
       def initialize(&block)
-        configure(id: self.class.configuration[:id], &block)
+        configure(id: self.class.configuration.id, &block)
       end
 
       def setup!
@@ -24,7 +24,7 @@ module Elasticsearch
 
       def find_index(index:)
         indexes.find do |i|
-          i.name == index
+          i.name.to_s == index.to_s
         end
       end
 
