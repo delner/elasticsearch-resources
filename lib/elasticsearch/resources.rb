@@ -16,10 +16,10 @@ require 'elasticsearch/resources/document_factory'
 require 'elasticsearch/resources/response_factory'
 
 require 'elasticsearch/resources/resource'
-require 'elasticsearch/resources/cluster'
-require 'elasticsearch/resources/index'
-require 'elasticsearch/resources/type'
 require 'elasticsearch/resources/document'
+require 'elasticsearch/resources/type'
+require 'elasticsearch/resources/index'
+require 'elasticsearch/resources/cluster'
 
 module Elasticsearch
   module Resources
