@@ -8,7 +8,7 @@ module Elasticsearch
         def initialize(id:, cluster:, name: nil)
           @id = id
           @cluster = cluster
-          @name = name
+          @name = name.to_s
         end
 
         def types

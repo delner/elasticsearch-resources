@@ -8,7 +8,7 @@ module Elasticsearch
         def initialize(id:, index:, name: nil)
           @id = id
           @index = index
-          @name = name
+          @name = name.to_s
         end
       end
     end

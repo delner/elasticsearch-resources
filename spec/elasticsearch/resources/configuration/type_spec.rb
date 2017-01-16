@@ -41,7 +41,7 @@ describe Elasticsearch::Resources::Configuration::Type do
 
           describe '#name' do
             subject { super().name }
-            it { is_expected.to eq(name) }
+            it { is_expected.to eq(name.to_s) }
           end
         end
       end
