@@ -2,13 +2,9 @@ module Elasticsearch
   module Resources
     module Queryable
       def self.included(base)
+        base.include(Resource)
         base.extend(ClassMethods)
         base.include(InstanceMethods)
-      end
-
-      def self.prepended(base)
-        base.extend(ClassMethods)
-        base.prepend(InstanceMethods)
       end
 
       module ClassMethods
@@ -22,21 +18,17 @@ module Elasticsearch
         def query(action, params = {})
           raise NullClientError.new if client.nil?
           response = client.send(action, **params)
-          ResponseFactory.new(context: self, action: action, response: response).build
-        end
-
-        def find_index(index: nil)
-          nil
-        end
-
-        def find_type(index: nil, type: nil)
-          nil
+          ResponseFactory.new(resource: self, action: action, response: response).build
         end
       end
 
       class NullClientError < ArgumentError
         def initialize
-          super(I18n.t('elasticsearch.resources.queryable.null_client_error.message'))
+          super(message)
+        end
+
+        def message
+          I18n.t('elasticsearch.resources.queryable.null_client_error.message')
         end
       end
     end

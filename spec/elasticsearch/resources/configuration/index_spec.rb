@@ -21,11 +21,9 @@ describe Elasticsearch::Resources::Configuration::Index do
         let(:instance) do
           described_class.new(
             id: id,
-            cluster: cluster,
-            name: name
+            cluster: cluster
           )
         end
-        let(:name) { double('name') }
 
         context 'returns an Index with' do
           describe '#id' do
@@ -36,11 +34,6 @@ describe Elasticsearch::Resources::Configuration::Index do
           describe '#cluster' do
             subject { super().cluster }
             it { is_expected.to eq(cluster) }
-          end
-
-          describe '#name' do
-            subject { super().name }
-            it { is_expected.to eq(name.to_s) }
           end
         end
       end
@@ -54,8 +47,37 @@ describe Elasticsearch::Resources::Configuration::Index do
       end
 
       describe '#name' do
-        it { is_expected.to respond_to(:name) }
-        it { is_expected.to respond_to(:name=) }
+        subject { super().name }
+        it { is_expected.to eq(nil) }
+      end
+
+      describe '#name=' do
+        subject { super().name = name }
+
+        context 'given' do
+          context 'nil' do
+            let(:name) { nil }
+            it { expect { subject }.to raise_error(Elasticsearch::Resources::Configuration::Index::NullNameError) }
+          end
+
+          context 'a String' do
+            let(:name) { 'test' }
+
+            context 'then #name' do
+              subject { super(); instance.name }
+              it { is_expected.to eq(name.to_s) }
+            end
+          end
+
+          context 'a Symbol' do
+            let(:name) { :test }
+
+            context 'then #name' do
+              subject { super(); instance.name }
+              it { is_expected.to eq(name.to_s) }
+            end
+          end
+        end
       end
 
       describe '#types' do

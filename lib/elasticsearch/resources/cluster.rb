@@ -2,6 +2,9 @@ module Elasticsearch
   module Resources
     class Cluster
       include Resource
+      include Queryable
+      include Configurable
+      include Nameable
 
       define_configuration class_name: Configuration::Cluster
 
@@ -22,9 +25,29 @@ module Elasticsearch
         []
       end
 
+      def search(body, options = {})
+        params = {
+          body: body
+        }.merge(options)
+
+        query(:search, params)
+      end
+
+      def count(body, options = {})
+        params = {
+          body: body
+        }.merge(options)
+
+        query(:count, params)
+      end
+
+      def find_cluster
+        self
+      end
+
       def find_index(index:)
         indexes.find do |i|
-          i.name.to_s == index.to_s
+          i.find_index(index: index)
         end
       end
 

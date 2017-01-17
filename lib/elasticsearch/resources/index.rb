@@ -2,24 +2,18 @@ module Elasticsearch
   module Resources
     class Index
       include Resource
+      include Queryable
+      include Configurable
+      include Clusterable
+      include Nameable
 
       define_configuration \
         class_name: Configuration::Index,
         default: -> { cluster.settings.index(self.class.configuration.id) }
 
-      attr_reader :cluster
-
       def initialize(cluster:, &block)
         self.cluster = cluster
         configure(id: self.class.configuration.id, cluster: cluster.settings, &block)
-      end
-
-      def client
-        cluster.client
-      end
-
-      def name
-        settings.name
       end
 
       def setup!
@@ -34,6 +28,14 @@ module Elasticsearch
           delete
           super
         end
+      end
+
+      def client
+        cluster.client
+      end
+
+      def name
+        settings.name || super
       end
 
       def types
@@ -88,8 +90,12 @@ module Elasticsearch
         query(:count, params)
       end
 
+      def find_cluster
+        self.cluster
+      end
+
       def find_index(index: nil)
-        index.to_s == name.to_s ? self : nil
+        matches_name?(index) ? self : nil
       end
 
       def find_type(index: nil, type:)
@@ -97,10 +103,6 @@ module Elasticsearch
           t.find_type(type: type)
         end
       end
-
-      protected
-
-      attr_writer :cluster
     end
   end
 end

@@ -11,28 +11,25 @@ describe Elasticsearch::Resources::ResponseFactory do
 
   describe 'instance' do
     subject { instance }
-    let(:instance) { described_class.new(context: context, action: action, response: response) }
-    let(:context) { instance_double(Elasticsearch::Resources::Index) }
+    let(:instance) { described_class.new(resource: resource, action: action, response: response) }
+    let(:resource) { instance_double(Elasticsearch::Resources::Index) }
     let(:action) { instance_double(Symbol) }
     let(:response) { instance_double(Hash) }
     let(:content) { { '_index' => index_name, '_type' => type_name } }
     let(:index_name) { 'test_index' }
     let(:type_name) { 'test_type' }
 
-    let(:matching_index) { instance_double(Elasticsearch::Resources::Index) }
-    let(:matching_type) { instance_double(Elasticsearch::Resources::Type) }
     let(:document_factory) { instance_double(Elasticsearch::Resources::DocumentFactory) }
     let(:document) { instance_double(Elasticsearch::Resources::Document) }
 
-    before(:each) { allow(context).to receive(:find_type).with(index: index_name, type: type_name).and_return(matching_type) }
     before(:each) { allow(document_factory).to receive(:build).and_return(document) }
 
     describe 'behavior' do
       describe '#initialize' do
         context 'returns an ResponseFactory with' do
-          describe '#context' do
-            subject { super().context }
-            it { is_expected.to eq(context) }
+          describe '#resource' do
+            subject { super().resource }
+            it { is_expected.to eq(resource) }
           end
 
           describe '#action' do
@@ -47,8 +44,8 @@ describe Elasticsearch::Resources::ResponseFactory do
         end
       end
 
-      describe '#context' do
-        it { is_expected.to respond_to(:context) }
+      describe '#resource' do
+        it { is_expected.to respond_to(:resource) }
       end
 
       describe '#action' do
@@ -86,10 +83,12 @@ describe Elasticsearch::Resources::ResponseFactory do
       describe '#build_get' do
         subject { super().build_get }
         let(:response) { content }
+        let(:resources) { instance_double(Hash) }
 
+        before(:each) { allow(instance).to receive(:resources_for).with(content).and_return(resources) }
         before(:each) do
           allow(Elasticsearch::Resources::DocumentFactory).to receive(:new)
-            .with(type: matching_type, content: response)
+            .with(content: content, resources: resources)
             .and_return(document_factory)
         end
 
@@ -99,10 +98,12 @@ describe Elasticsearch::Resources::ResponseFactory do
       describe '#build_search' do
         subject { super().build_search }
         let(:response) { { 'hits' => { 'hits' => [content] } } }
+        let(:resources) { instance_double(Hash) }
 
+        before(:each) { allow(instance).to receive(:resources_for).with(content).and_return(resources) }
         before(:each) do
           allow(Elasticsearch::Resources::DocumentFactory).to receive(:new)
-            .with(type: matching_type, content: content)
+            .with(content: content, resources: resources)
             .and_return(document_factory)
         end
 
@@ -110,26 +111,17 @@ describe Elasticsearch::Resources::ResponseFactory do
         it { is_expected.to include(document) }
       end
 
-      describe '#get_document_type' do
-        subject { super().get_document_type(content: content) }
-        before(:each) { expect(context).to receive(:find_type).with(index: index_name, type: type_name).and_return(matching_type) }
-        it { is_expected.to be(matching_type) }
-      end
+      describe '#resources_for' do
+        subject { super().resources_for(content) }
+        let(:cluster) { instance_double(Elasticsearch::Resources::Cluster) }
+        let(:index) { instance_double(Elasticsearch::Resources::Index) }
+        let(:type) { instance_double(Elasticsearch::Resources::Type) }
 
-      describe '#get_document_type!' do
-        subject { super().get_document_type!(content: content) }
-        before(:each) { expect(instance).to receive(:get_document_type).with(content: content).and_return(matching_type) }
+        before(:each) { allow(resource).to receive(:find_cluster).and_return(cluster) }
+        before(:each) { allow(resource).to receive(:find_index).with(index: index_name).and_return(index) }
+        before(:each) { allow(resource).to receive(:find_type).with(index: index_name, type: type_name).and_return(type) }
 
-        context 'when matching_type is' do
-          context 'nil' do
-            let(:matching_type) { nil }
-            it { expect { subject }.to raise_error(Elasticsearch::Resources::ResponseFactory::UnknownTypeError) }
-          end
-
-          context 'a Type' do
-            it { is_expected.to be(matching_type) }
-          end
-        end
+        it { is_expected.to include(cluster: cluster, index: index, type: type) }
       end
     end
   end

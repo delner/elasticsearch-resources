@@ -2,23 +2,26 @@ module Elasticsearch
   module Resources
     module Resource
       def self.included(base)
-        base.include(Configurable)
-        base.include(Queryable)
         base.extend(ClassMethods)
         base.include(InstanceMethods)
-      end
-
-      def self.prepended(base)
-        base.prepend(Configurable)
-        base.prepend(Queryable)
-        base.extend(ClassMethods)
-        base.prepend(InstanceMethods)
       end
 
       module ClassMethods
       end
 
       module InstanceMethods
+        def find_cluster
+          nil
+        end
+
+        def find_index(index: nil)
+          nil
+        end
+
+        def find_type(index: nil, type: nil)
+          nil
+        end
+
         def setup!
           nil
         end

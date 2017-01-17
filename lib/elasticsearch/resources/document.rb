@@ -1,23 +1,28 @@
 module Elasticsearch
   module Resources
     class Document
+      include Resource
       include Queryable
       include Typeable
       include Identifiable
       include Describable
 
-      def initialize(type:, id:, attributes: {})
+      def initialize(id:, attributes: {}, type:)
         self.type = type
-        self.id = id.to_s
+        self.id = id
         self.attributes = attributes
       end
 
-      def client
-        type.client
+      def cluster
+        index.cluster
       end
 
       def index
         type.index
+      end
+
+      def client
+        type.client
       end
 
       def query(action, options = {})
@@ -50,6 +55,10 @@ module Elasticsearch
         define_method action do |options = {}|
           query(action, options)
         end
+      end
+
+      def find_cluster
+        self.cluster
       end
 
       def find_index(index: nil)

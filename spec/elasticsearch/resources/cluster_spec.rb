@@ -35,6 +35,29 @@ describe Elasticsearch::Resources::Cluster do
         it { is_expected.to be_empty }
       end
 
+      describe '#search' do
+        subject { super().search(body, **options) }
+        let(:body) { double(Hash) }
+        let(:options) { { test: true } }
+        let(:result) { double('result') }
+        before(:each) { expect(instance).to receive(:query).with(:search, body: body, test: true).and_return(result) }
+        it { is_expected.to be(result) }
+      end
+
+      describe '#count' do
+        subject { super().count(body, **options) }
+        let(:body) { double(Hash) }
+        let(:options) { { test: true } }
+        let(:result) { double('result') }
+        before(:each) { expect(instance).to receive(:query).with(:count, body: body, test: true).and_return(result) }
+        it { is_expected.to be(result) }
+      end
+
+      describe '#find_cluster' do
+        subject { super().find_cluster }
+        it { is_expected.to be(instance) }
+      end
+
       describe '#find_index' do
         subject { super().find_index(index: index_name) }
         let(:index_name) { :test_index }
@@ -45,18 +68,10 @@ describe Elasticsearch::Resources::Cluster do
           end
 
           context 'contain a matching index' do
-            let(:index) { instance_double(Elasticsearch::Resources::Index, name: index_name) }
+            let(:index) { instance_double(Elasticsearch::Resources::Index) }
             before(:each) { allow(instance).to receive(:indexes).and_return([index]) }
-
-            context 'by Symbol' do
-              let(:index_name) { super().to_sym }
-              it { is_expected.to be(index) }
-            end
-
-            context 'by String' do
-              let(:index_name) { super().to_s }
-              it { is_expected.to be(index) }
-            end
+            before(:each) { expect(index).to receive(:find_index).with(index: index_name).and_return(index) }
+            it { is_expected.to be(index) }
           end
         end
       end

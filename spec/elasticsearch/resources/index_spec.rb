@@ -33,17 +33,6 @@ describe Elasticsearch::Resources::Index do
         end
       end
 
-      describe '#client' do
-        subject { super().client }
-        it { is_expected.to be(client) }
-      end
-
-      describe '#name' do
-        subject { super().name }
-        before(:each) { expect(instance.settings).to receive(:name).and_return(name) }
-        it { is_expected.to be(name) }
-      end
-
       describe '#setup!' do
         subject { super().setup! }
         context 'when the index' do
@@ -78,6 +67,27 @@ describe Elasticsearch::Resources::Index do
             let(:exists) { true }
             before(:each) { expect(instance).to receive(:delete) }
             it { is_expected.to be nil }
+          end
+        end
+      end
+
+      describe '#client' do
+        subject { super().client }
+        it { is_expected.to be(client) }
+      end
+
+      describe '#name' do
+        subject { super().name }
+
+        context 'when the settings' do
+          context 'defines a name' do
+            before(:each) { expect(instance.settings).to receive(:name).and_return(name) }
+            it { is_expected.to be(name) }
+          end
+
+          context 'doesn\'t define a name' do
+            before(:each) { expect(instance.settings).to receive(:name).and_return(nil) }
+            it { is_expected.to eq(instance.class.default_name) }
           end
         end
       end
@@ -158,6 +168,11 @@ describe Elasticsearch::Resources::Index do
         let(:result) { double('result') }
         before(:each) { expect(instance).to receive(:query).with(:count, body: body, test: true).and_return(result) }
         it { is_expected.to be(result) }
+      end
+
+      describe '#find_cluster' do
+        subject { super().find_cluster }
+        it { is_expected.to be(cluster) }
       end
 
       describe '#find_index' do

@@ -14,9 +14,6 @@ describe Elasticsearch::Resources::Resource do
     describe 'class' do
       subject { test_class }
 
-      it { expect(subject < Elasticsearch::Resources::Configurable).to be true }
-      it { expect(subject < Elasticsearch::Resources::Queryable).to be true }
-
       describe 'behavior' do
       end
     end
@@ -26,6 +23,24 @@ describe Elasticsearch::Resources::Resource do
       let(:instance) { test_class.new }
 
       describe 'behavior' do
+        describe '#find_cluster' do
+          subject { super().find_cluster }
+          it { is_expected.to be nil }
+        end
+
+        describe '#find_index' do
+          subject { super().find_index(index: index) }
+          let(:index) { double('index') }
+          it { is_expected.to be nil }
+        end
+
+        describe '#find_type' do
+          subject { super().find_type(index: index, type: type) }
+          let(:index) { double('index') }
+          let(:type) { double('type') }
+          it { is_expected.to be nil }
+        end
+
         describe '#setup!' do
           subject { super().setup! }
           it { is_expected.to be nil }

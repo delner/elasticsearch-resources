@@ -1,9 +1,21 @@
 en:
   elasticsearch:
-    resouces:
-      document_factory:
-        unknown_type_error:
-          message: "Unknown document type for '%{index}/%{type}'!"
+    resources:
+      configuration:
+        cluster:
+          null_name_error:
+            message: 'Cluster cannot be assigned a nil name!'
+          null_host_error:
+            message: 'Cluster cannot be assigned a nil host!'
+        index:
+          null_name_error:
+            message: 'Index cannot be assigned a nil name!'
+        type:
+          null_name_error:
+            message: 'Type cannot be assigned a nil name!'
+      identifiable:
+        null_id_error:
+          message: "ID cannot be assigned a nil value!"
       indexable:
         null_index_error:
           message: "Index cannot be nil!"

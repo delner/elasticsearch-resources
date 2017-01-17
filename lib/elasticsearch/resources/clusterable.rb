@@ -1,6 +1,6 @@
 module Elasticsearch
   module Resources
-    module Indexable
+    module Clusterable
       def self.included(base)
         base.extend(ClassMethods)
         base.include(InstanceMethods)
@@ -10,23 +10,23 @@ module Elasticsearch
       end
 
       module InstanceMethods
-        attr_reader :index
+        attr_reader :cluster
 
         protected
 
-        def index=(index)
-          raise NullIndexError.new if index.nil?
-          @index = index
+        def cluster=(cluster)
+          raise NullClusterError.new if cluster.nil?
+          @cluster = cluster
         end
       end
 
-      class NullIndexError < ArgumentError
+      class NullClusterError < ArgumentError
         def initialize
           super(message)
         end
 
         def message
-          I18n.t('elasticsearch.resources.indexable.null_index_error.message')
+          I18n.t('elasticsearch.resources.clusterable.null_cluster_error.message')
         end
       end
     end

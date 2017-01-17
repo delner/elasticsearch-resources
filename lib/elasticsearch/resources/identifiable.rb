@@ -6,11 +6,6 @@ module Elasticsearch
         base.include(InstanceMethods)
       end
 
-      def self.prepended(base)
-        base.extend(ClassMethods)
-        base.prepend(InstanceMethods)
-      end
-
       module ClassMethods
       end
 
@@ -27,7 +22,11 @@ module Elasticsearch
 
       class NullIdError < ArgumentError
         def initialize
-          super(I18n.t('elasticsearch.resources.identifiable.null_id_error.message'))
+          super(message)
+        end
+
+        def message
+          I18n.t('elasticsearch.resources.identifiable.null_id_error.message')
         end
       end
     end
