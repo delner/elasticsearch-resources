@@ -1,7 +1,7 @@
 Elasticsearch::Resources
 ========================
 
-[![Build Status](https://travis-ci.org/delner/elasticsearch-resources.svg?branch=master)](https://travis-ci.org/delner/elasticsearch-resources) ![Gem Version](https://img.shields.io/gem/v/elasticsearch-resources.svg?maxAge=2592000)
+[![Build Status](https://travis-ci.org/delner/elasticsearch-resources.svg?branch=master)](https://travis-ci.org/delner/elasticsearch-resources) [![Gem Version](https://badge.fury.io/rb/elasticsearch-resources.svg)](https://badge.fury.io/rb/elasticsearch-resources)
 ###### *For Ruby 2.3+*
 
 `Elasticsearch::Resources` is a wrapper for the [Elasticsearch gem](https://github.com/elastic/elasticsearch-ruby) that provides a strongly typed interface for accessing your indexes, types, and documents.
