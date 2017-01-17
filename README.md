@@ -50,7 +50,7 @@ There are four (4) basic resources which you can query with: `Cluster`, `Index`,
 
 #### Cluster
 
-A `Elasticsearch::Resources::Cluster` represents an ElasticSearch cluster that hosts multiple indexes. You will always needs to create one to run queries.
+An `Elasticsearch::Resources::Cluster` represents an ElasticSearch cluster that hosts multiple indexes. You will always needs to create one to run queries.
 
 ```ruby
 # Create a cluster with default settings (connects to '127.0.0.1:9200')
@@ -94,7 +94,7 @@ cluster.count({ query: { match: { title: 'Tron' } } })
 
 #### Index
 
-A `Elasticsearch::Resources::Index` represents an ElasticSearch index that contains multiple types. Requires a `Cluster` (see "Cluster" above.)
+An `Elasticsearch::Resources::Index` represents an ElasticSearch index that contains multiple types. Requires a `Cluster` (see "Cluster" above.)
 
 ```ruby
 # Create an index
@@ -166,10 +166,101 @@ index.put_mapping(type: 'movies', body: { })
 
 Calls [`delete`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Indices/Actions#delete-instance_method) on the `Elasticsearch::API::Indices::IndicesClient`.
 
-Throws error if index doesn't exists.
+Throws error if index doesn't exist.
 
 ```ruby
 index.delete
+```
+
+#### Type
+
+An `Elasticsearch::Resources::Type` represents an ElasticSearch type within an index. Requires a `Index` (see "Index" above.)
+
+```ruby
+# Create a type
+type = Elasticsearch::Resources::Type.new(index: index) do |type|
+  type.name = 'movies'
+end
+```
+
+##### client
+
+Returns the underlying `Elasticsearch::Transport::Client`.
+
+```ruby
+type.client
+```
+
+##### search
+
+Accepts `(body, options = {})` and calls [`search`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions#search-instance_method) on the `Elasticsearch::Transport::Client`. Automatically adds the `index` and `type` option to your queries.
+
+Returns `Array[Elasticsearch::Resources::Document]` objects.
+
+```ruby
+type.search({ query: { match: { title: 'Tron' } } })
+# => [#<Elasticsearch::Resources::Document>]
+```
+
+##### count
+
+Accepts `(body, options = {})` and calls [`count`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions#count-instance_method) on the `Elasticsearch::Transport::Client`. Automatically adds the `index` and `type` option to your queries.
+
+Returns `Hash` response from `Elasticsearch::Transport::Client`.
+
+```ruby
+type.count({ query: { match: { title: 'Tron' } } })
+# => {"count"=>1, "_shards"=>{"total"=>5, "successful"=>5, "failed"=>0}}
+```
+
+##### exists?
+
+Accepts `(options = {})` and calls [`exists?`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions#exists-instance_method) on the `Elasticsearch::Transport::Client`. Automatically adds the `index` and `type` option to your queries.
+
+Returns `true` or `false`.
+
+```ruby
+type.exists?(id: 'tron')
+# => true
+```
+
+##### create
+
+Accepts `(options = {})` and calls [`create`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions#create-instance_method) on the `Elasticsearch::Transport::Client`. Automatically adds the `index` and `type` option to your queries.
+
+Throws error if document already exists.
+
+```ruby
+type.create(id: 'tron', body: { })
+```
+
+##### update
+
+Accepts `(options = {})` and calls [`update`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions#update-instance_method) on the `Elasticsearch::Transport::Client`. Automatically adds the `index` and `type` option to your queries.
+
+```ruby
+type.update(id: 'tron', body: { })
+```
+
+##### delete
+
+Accepts `(options = {})` and calls [`delete`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions#delete-instance_method) on the `Elasticsearch::Transport::Client`. Automatically adds the `index` and `type` option to your queries.
+
+Throws error if document doesn't exist.
+
+```ruby
+type.delete(id: 'tron')
+```
+
+##### get
+
+Accepts `(options = {})` and calls [`get`](http://www.rubydoc.info/gems/elasticsearch-api/Elasticsearch/API/Actions#get-instance_method) on the `Elasticsearch::Transport::Client`. Automatically adds the `index` and `type` option to your queries.
+
+Returns `Elasticsearch::Resources::Document`.
+
+```ruby
+type.get(id: 'tron')
+# => #<Elasticsearch::Resources::Document>
 ```
 
 ## Development
