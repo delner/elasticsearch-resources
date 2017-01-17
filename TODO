@@ -1,0 +1,51 @@
+[ ] Rename `define_configuration` to `settings`
+[ ] Change configuration `defaults` --> `inherit_from`
+[ ] Change `define_document_class` to `define_document`
+[ ] Change all constant arguments to use String instead (for lazy loading.)
+[ ] Add `defaults` to `configure_settings` (takes block, calls with settings)
+[ ] `define_indexes` takes list of Index class names
+[ ] `define_types` takes list of Type class names
+[ ] Remove `default_name` from Nameable (obsolete after `defaults`)
+
+# Sample API
+
+class DavesAwesomeMovies < Elasticsearch::Resources::Cluster
+  settings \
+    id: 'davesawesomemovies',
+    class_name: 'Configuration::DavesAwesomeMovies',
+    inherit_from: -> { index.settings.type(id) },
+    defaults: -> { |c|
+      c.name = 'davesawesomemovies'
+      c.host = 'davesawesomemovies.com:9200'
+    }
+
+  define_indexes 'Film', 'Articles'
+end
+
+class DavesAwesomeMovies < Elasticsearch::Resources::Cluster
+  configure_settings \
+    defaults: -> { |c|
+      c.name = 'davesawesomemovies'
+      c.host = 'davesawesomemovies.com:9200'
+    }
+
+  define_indexes 'Film', 'Articles'
+end
+
+class Film < Elasticsearch::Resources::Index
+  configure_settings \
+    defaults: -> { |c|
+      c.name = 'film'
+    }
+
+  define_types 'Movies', 'Trailers'
+end
+
+class Movies < Elasticsearch::Resources::Type
+  configure_settings \
+    defaults: -> { |c|
+      c.name = 'movies'
+    }
+
+  define_document 'Movie'
+end
