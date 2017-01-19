@@ -7,9 +7,7 @@ module Elasticsearch
       include Indexable
       include Nameable
 
-      define_configuration \
-        class_name: 'Elasticsearch::Resources::Configuration::Type',
-        inherit_from: -> { index.settings.type(self.class.configuration.id) }
+      define_configuration class_name: 'Elasticsearch::Resources::Configuration::Type'
 
       ACTIONS = [
         :exists?,
