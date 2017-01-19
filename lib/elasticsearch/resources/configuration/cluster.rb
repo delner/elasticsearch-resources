@@ -1,14 +1,8 @@
 module Elasticsearch
   module Resources
     module Configuration
-      class Cluster
+      class Cluster < Settings
         include Nameable
-
-        attr_reader :id
-
-        def initialize(id: nil)
-          @id = id
-        end
 
         def client
           @client ||= Elasticsearch::Client.new(host: host)

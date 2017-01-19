@@ -1,14 +1,8 @@
 module Elasticsearch
   module Resources
     module Configuration
-      class Index
+      class Index < Settings
         include Nameable
-
-        attr_reader :id
-
-        def initialize(id: nil)
-          @id = id
-        end
 
         def types
           @types ||= default_types
