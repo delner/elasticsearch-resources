@@ -22,7 +22,13 @@ module Elasticsearch
       end
 
       def indexes
-        []
+        @indexes ||= self.class.indexes.collect do |index_class|
+          index_class.new(cluster: self).tap do |index|
+            settings.index(index_class.configuration.id).tap do |settings|
+              index.settings = settings.dup unless settings.nil?
+            end
+          end
+        end
       end
 
       def search(body, options = {})
@@ -53,6 +59,16 @@ module Elasticsearch
 
       def find_type(index:, type:)
         find_index(index: index)&.find_type(index: index, type: type)
+      end
+
+      protected
+
+      def self.indexes
+        (@index_names ||= []).collect { |i| Object.const_get(i) }
+      end
+
+      def self.define_indexes(*indexes)
+        @index_names = indexes.collect { |i| i.class == Class ? i.name : i }
       end
     end
   end

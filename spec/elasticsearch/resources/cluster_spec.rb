@@ -6,6 +6,40 @@ describe Elasticsearch::Resources::Cluster do
 
   describe 'class' do
     describe 'behavior' do
+      context 'that mutates the class' do
+        subject { test_class }
+        let(:test_class) { stub_const 'TestClass', Class.new(described_class) }
+
+        describe '#define_indexes' do
+          subject { super().define_indexes(*indexes) }
+          let(:indexes) { [index] }
+
+          context 'given a constant' do
+            let(:index) { Elasticsearch::Resources::Index }
+            it { is_expected.to eq([index.name]) }
+          end
+
+          context 'given a string' do
+            let(:index) { 'Elasticsearch::Resources::Index' }
+            it { is_expected.to eq([index]) }
+          end
+        end
+
+        describe '#indexes' do
+          subject { super().indexes }
+
+          context 'when indexes have' do
+            context 'not been defined' do
+              it { is_expected.to eq([]) }
+            end
+
+            context 'been defined' do
+              before(:each) { test_class.send(:define_indexes, 'Elasticsearch::Resources::Index') }
+              it { is_expected.to eq([Elasticsearch::Resources::Index]) }
+            end
+          end
+        end
+      end
     end
   end
 
