@@ -7,7 +7,7 @@ module Elasticsearch
       include Identifiable
       include Describable
 
-      def initialize(id:, attributes: {}, type:)
+      def initialize(type:, id:, attributes: {})
         self.type = type
         self.id = id
         self.attributes = attributes
