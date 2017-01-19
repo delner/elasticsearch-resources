@@ -15,22 +15,6 @@ describe Elasticsearch::Resources::Nameable do
       subject { test_class }
 
       describe 'behavior' do
-        describe '#default_name' do
-          subject { super().default_name }
-          it { is_expected.to be nil }
-        end
-
-        describe '#define_default_name' do
-          subject { super().define_default_name(name) }
-          let(:name) { 'name' }
-
-          context 'then the class' do
-            describe '#default_name' do
-              subject { super(); test_class.default_name }
-              it { is_expected.to eq(name) }
-            end
-          end
-        end
       end
     end
 
@@ -41,7 +25,7 @@ describe Elasticsearch::Resources::Nameable do
       describe 'behavior' do
         describe '#name' do
           subject { super().name }
-          it { is_expected.to eq(instance.class.default_name) }
+          it { is_expected.to be nil }
         end
 
         describe '#matches_name?' do

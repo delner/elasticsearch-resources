@@ -87,7 +87,7 @@ describe Elasticsearch::Resources::Index do
 
           context 'doesn\'t define a name' do
             before(:each) { expect(instance.settings).to receive(:name).and_return(nil) }
-            it { is_expected.to eq(instance.class.default_name) }
+            it { is_expected.to be nil }
           end
         end
       end

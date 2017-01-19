@@ -33,7 +33,7 @@ module Elasticsearch
       end
 
       def name
-        settings.name || super
+        settings.name
       end
 
       def query(action, options = {})

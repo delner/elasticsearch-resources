@@ -7,16 +7,11 @@ module Elasticsearch
       end
 
       module ClassMethods
-        attr_reader :default_name
-
-        def define_default_name(name)
-          @default_name = name&.to_s
-        end
       end
 
       module InstanceMethods
         def name
-          self.class.default_name
+          nil
         end
 
         def matches_name?(name)
