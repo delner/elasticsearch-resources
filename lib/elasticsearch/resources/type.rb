@@ -84,16 +84,16 @@ module Elasticsearch
       end
 
       def self.document_class
-        @document_class
+        Object.const_get(@document_class) if @document_class
       end
 
       protected
 
-      def self.define_document_class(document_class)
+      def self.define_document(document_class)
         @document_class = document_class
       end
 
-      define_document_class Elasticsearch::Resources::Document
+      define_document 'Elasticsearch::Resources::Document'
     end
   end
 end
