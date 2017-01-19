@@ -13,11 +13,9 @@ module Elasticsearch
 
         protected
 
-        def define_configuration(options = {})
+        def define_configuration(attributes = {})
           @configuration = configuration.tap do |c|
-            options.each do |name, value|
-              c.send("#{name.to_s}=", value) if c.respond_to?("#{name.to_s}=") && !value.nil?
-            end
+            c.set_attributes(attributes)
           end
         end
       end
@@ -26,12 +24,24 @@ module Elasticsearch
         attr_reader :settings
 
         def default_settings
-          default_expression = self.class.configuration.default
-          default_expression ? self.instance_exec(&default_expression) : nil
+          default_id = self.class.configuration.id
+          self.class.configuration.class_name&.new(id: default_id).tap do |s|
+            defaults_block = self.class.configuration.defaults
+            self.instance_exec(s, &defaults_block) if defaults_block
+          end
         end
 
-        def configure(options = {}, &block)
-          @settings = default_settings&.dup || self.class.configuration.class_name&.new(**options)
+        def inherited_settings
+          inherit_block = self.class.configuration.inherit_from
+          if inherit_block
+            s = self.instance_exec(&inherit_block)&.dup
+          else
+            nil
+          end
+        end
+
+        def configure(&block)
+          @settings = inherited_settings || default_settings
           settings.tap do |s|
             yield(s) if block_given?
           end
@@ -39,9 +49,15 @@ module Elasticsearch
       end
 
       class Configuration
-        ATTRIBUTES = [:id, :class_name, :default].freeze
+        ATTRIBUTES = [:id, :class_name, :inherit_from, :defaults].freeze
 
         attr_accessor *ATTRIBUTES
+
+        def set_attributes(attributes = {})
+          attributes.each do |name, value|
+            self.send("#{name.to_s}=", value) if self.respond_to?("#{name.to_s}=")
+          end
+        end
 
         def ==(obj)
           ATTRIBUTES.all? { |a| obj.send(a) == self.send(a) }

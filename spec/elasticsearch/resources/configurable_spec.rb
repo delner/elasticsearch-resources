@@ -47,8 +47,13 @@ describe Elasticsearch::Resources::Configurable do
               it { is_expected.to be nil }
             end
 
-            describe '#default' do
-              subject { super().default }
+            describe '#inherit_from' do
+              subject { super().inherit_from }
+              it { is_expected.to be nil }
+            end
+
+            describe '#defaults' do
+              subject { super().defaults }
               it { is_expected.to be nil }
             end
           end
@@ -71,19 +76,22 @@ describe Elasticsearch::Resources::Configurable do
               :define_configuration,
               id: id,
               class_name: class_name,
-              default: default
+              inherit_from: inherit_from,
+              defaults: defaults
             )
           end
 
           let(:id) { double('id') }
           let(:class_name) { double('class_name') }
-          let(:default) { double('default') }
+          let(:inherit_from) { double('inherit_from') }
+          let(:defaults) { double('defaults') }
 
           let(:test_class_configuration) do
             configuration_class.new.tap do |c|
               c.id = id
               c.class_name = class_name
-              c.default = default
+              c.inherit_from = inherit_from
+              c.defaults = defaults
             end
           end
 
@@ -105,14 +113,16 @@ describe Elasticsearch::Resources::Configurable do
 
             let(:parent_id) { double('parent id') }
             let(:parent_class_name) { double('parent class_name') }
-            let(:parent_default) { double('parent default') }
+            let(:parent_inherit_from) { double('parent inherit_from') }
+            let(:parent_defaults) { double('parent defaults') }
 
             before(:each) do
               parent_class.send(
                 :define_configuration,
                 id: parent_id,
                 class_name: parent_class_name,
-                default: parent_default
+                inherit_from: parent_inherit_from,
+                defaults: parent_defaults
               )
             end
 
@@ -120,7 +130,8 @@ describe Elasticsearch::Resources::Configurable do
               configuration_class.new.tap do |c|
                 c.id = parent_id
                 c.class_name = parent_class_name
-                c.default = parent_default
+                c.inherit_from = parent_inherit_from
+                c.defaults = parent_defaults
               end
             end
 
@@ -157,65 +168,75 @@ describe Elasticsearch::Resources::Configurable do
       describe 'behavior' do
         describe '#default_settings' do
           subject { super().default_settings }
-          let(:configuration) { instance_double(configuration_class, default: default) }
+          let(:id) { double('id') }
+          let(:defaults) { nil }
+          let(:configuration) { instance_double(configuration_class, id: id, class_name: class_name, defaults: defaults) }
 
           before(:each) { allow(test_class).to receive(:configuration).and_return(configuration) }
 
-          context 'if the configuration default value' do
+          context 'when the configuration class name is' do
+            context 'nil' do
+              let(:class_name) { nil }
+              it { is_expected.to be nil }
+            end
+
+            context 'a constant' do
+              let(:class_name) { double('constant') }
+              let(:settings) { instance_double('settings') }
+              before(:each) { allow(class_name).to receive(:new).with(id: id).and_return(settings) }
+              it { is_expected.to be(settings) }
+
+              context 'and defaults are defined' do
+                let(:defaults) { Proc.new { } }
+                before(:each) { expect(instance).to receive(:instance_exec).with(settings, &defaults) }
+                it { is_expected.to be(settings) }
+              end
+            end
+          end
+        end
+
+        describe '#inherited_settings' do
+          subject { super().inherited_settings }
+          let(:configuration) { instance_double(configuration_class, inherit_from: inherit_from) }
+
+          before(:each) { allow(test_class).to receive(:configuration).and_return(configuration) }
+
+          context 'if the configuration inherit from block' do
             context 'is not set' do
-              let(:default) { nil }
+              let(:inherit_from) { nil }
               it { is_expected.to be nil }
             end
 
             context 'is a Proc' do
-              let(:default) { Proc.new { self.class.name == 'TestClass' } }
-              it { is_expected.to be true }
+              let(:inherit_from) { Proc.new { 'inherited settings' } }
+              it { is_expected.to eq 'inherited settings' }
             end
           end
         end
 
         describe '#configure' do
-          subject { super().configure(**options) }
-          let(:options) { { id: :test } }
+          subject { super().configure }
+          let(:inherited_settings) { double('inherited settings') }
+          let(:default_settings) { double('default settings') }
 
-          context 'given options' do
-            context 'when default settings is' do
-              before(:each) { allow(instance).to receive(:default_settings).and_return(default_settings) }
+          before(:each) { allow(instance).to receive(:inherited_settings).and_return(inherited_settings) }
+          before(:each) { allow(instance).to receive(:default_settings).and_return(default_settings) }
 
-              context 'nil' do
-                let(:default_settings) { nil }
-
-                context 'and the configuration class name is' do
-                  let(:configuration) { instance_double(configuration_class, class_name: class_name) }
-
-                  before(:each) { allow(test_class).to receive(:configuration).and_return(configuration) }
-
-                  context 'nil' do
-                    let(:class_name) { nil }
-                    it { is_expected.to be nil }
-                  end
-
-                  context 'a constant' do
-                    let(:class_name) { double('constant') }
-                    let(:settings) { instance_double('settings') }
-                    before(:each) { allow(class_name).to receive(:new).with(**options).and_return(settings) }
-                    it { is_expected.to be(settings) }
-                  end
-                end
-              end
-
-              context 'not nil' do
-                let(:default_settings) { {} }
-                it { is_expected.to eq(default_settings) }
-                it { is_expected.to_not be(default_settings) }
-              end
+          context 'when inherited settings returns' do
+            context 'nil' do
+              let(:inherited_settings) { nil }
+              it { is_expected.to be(default_settings) }
             end
 
-            context 'and a block' do
-              let(:settings) { instance_double('settings') }
-              before(:each) { allow(instance).to receive(:settings).and_return(settings) }
-              it { expect { |b| instance.configure(&b) }.to yield_with_args(settings) }
+            context 'not nil' do
+              it { is_expected.to be(inherited_settings) }
             end
+          end
+
+          context 'when given a block' do
+            let(:settings) { instance_double('settings') }
+            before(:each) { allow(instance).to receive(:settings).and_return(settings) }
+            it { expect { |b| instance.configure(&b) }.to yield_with_args(settings) }
           end
         end
       end
