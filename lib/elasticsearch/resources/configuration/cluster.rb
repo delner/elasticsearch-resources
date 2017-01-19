@@ -2,9 +2,11 @@ module Elasticsearch
   module Resources
     module Configuration
       class Cluster
-        attr_reader :id, :name
+        include Nameable
 
-        def initialize(id:)
+        attr_reader :id
+
+        def initialize(id: nil)
           @id = id
         end
 
@@ -22,11 +24,6 @@ module Elasticsearch
           end
         end
 
-        def name=(name)
-          raise NullNameError.new if name.nil?
-          @name = name.to_s
-        end
-
         def host
           @host ||= '127.0.0.1:9200'
         end
@@ -34,16 +31,6 @@ module Elasticsearch
         def host=(host)
           raise NullHostError.new if host.nil?
           @host = host
-        end
-
-        class NullNameError < ArgumentError
-          def initialize
-            super(message)
-          end
-
-          def message
-            I18n.t('elasticsearch.resources.configuration.cluster.null_name_error.message')
-          end
         end
 
         class NullHostError < ArgumentError

@@ -36,40 +36,6 @@ describe Elasticsearch::Resources::Configuration::Cluster do
         it { is_expected.to respond_to(:id) }
       end
 
-      describe '#name' do
-        subject { super().name }
-        it { is_expected.to eq(nil) }
-      end
-
-      describe '#name=' do
-        subject { super().name = name }
-
-        context 'given' do
-          context 'nil' do
-            let(:name) { nil }
-            it { expect { subject }.to raise_error(Elasticsearch::Resources::Configuration::Cluster::NullNameError) }
-          end
-
-          context 'a String' do
-            let(:name) { 'test' }
-
-            context 'then #name' do
-              subject { super(); instance.name }
-              it { is_expected.to eq(name.to_s) }
-            end
-          end
-
-          context 'a Symbol' do
-            let(:name) { :test }
-
-            context 'then #name' do
-              subject { super(); instance.name }
-              it { is_expected.to eq(name.to_s) }
-            end
-          end
-        end
-      end
-
       describe '#host' do
         subject { super().host }
         it { is_expected.to eq('127.0.0.1:9200') }
