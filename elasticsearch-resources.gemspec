@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Elasticsearch::Resources::VERSION
   spec.authors       = ["David Elner"]
   spec.email         = ["david@davidelner.com"]
+  spec.license       = 'Apache-2.0'
 
   spec.summary       = %q{Access well-known Elasticsearch indexes like resources.}
   spec.description   = %q{Allows you to strongly-type Elasticsearch types and query them more easily.}
