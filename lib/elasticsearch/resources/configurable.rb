@@ -21,7 +21,7 @@ module Elasticsearch
       end
 
       module InstanceMethods
-        attr_reader :settings
+        attr_accessor :settings
 
         def default_settings
           default_id = self.class.configuration.id
