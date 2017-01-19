@@ -9,7 +9,7 @@ module Elasticsearch
       define_configuration class_name: Configuration::Cluster
 
       def initialize(&block)
-        configure(id: self.class.configuration.id, &block)
+        configure(&block)
       end
 
       def setup!

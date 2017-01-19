@@ -9,11 +9,11 @@ module Elasticsearch
 
       define_configuration \
         class_name: Configuration::Index,
-        default: -> { cluster.settings.index(self.class.configuration.id) }
+        inherit_from: -> { cluster.settings.index(self.class.configuration.id) }
 
       def initialize(cluster:, &block)
         self.cluster = cluster
-        configure(id: self.class.configuration.id, cluster: cluster.settings, &block)
+        configure(&block)
       end
 
       def setup!

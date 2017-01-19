@@ -9,7 +9,7 @@ module Elasticsearch
 
       define_configuration \
         class_name: Configuration::Type,
-        default: -> { index.settings.type(self.class.configuration.id) }
+        inherit_from: -> { index.settings.type(self.class.configuration.id) }
 
       ACTIONS = [
         :exists?,
@@ -21,7 +21,7 @@ module Elasticsearch
 
       def initialize(index:, &block)
         self.index = index
-        configure(id: self.class.configuration.id, index: index.settings, &block)
+        configure(&block)
       end
 
       def cluster
