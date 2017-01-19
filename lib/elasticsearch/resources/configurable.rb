@@ -59,6 +59,10 @@ module Elasticsearch
           end
         end
 
+        def class_name=(class_name)
+          @class_name = (class_name.class == Class ? class_name.name : class_name)
+        end
+
         def configuration_class
           class_name ? Object.const_get(class_name) : nil
         end

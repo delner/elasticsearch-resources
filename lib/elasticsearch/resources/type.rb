@@ -90,7 +90,7 @@ module Elasticsearch
       protected
 
       def self.define_document(document_class)
-        @document_class = document_class
+        @document_class = (document_class.class == Class ? document_class.name : document_class)
       end
 
       define_document 'Elasticsearch::Resources::Document'
