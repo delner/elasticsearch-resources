@@ -25,7 +25,7 @@ module Elasticsearch
 
         def default_settings
           default_id = self.class.configuration.id
-          self.class.configuration.class_name&.new(id: default_id).tap do |s|
+          self.class.configuration.configuration_class&.new(id: default_id).tap do |s|
             defaults_block = self.class.configuration.defaults
             self.instance_exec(s, &defaults_block) if defaults_block
           end
@@ -57,6 +57,10 @@ module Elasticsearch
           attributes.each do |name, value|
             self.send("#{name.to_s}=", value) if self.respond_to?("#{name.to_s}=")
           end
+        end
+
+        def configuration_class
+          class_name ? Object.const_get(class_name) : nil
         end
 
         def ==(obj)

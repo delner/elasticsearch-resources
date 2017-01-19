@@ -170,11 +170,11 @@ describe Elasticsearch::Resources::Configurable do
           subject { super().default_settings }
           let(:id) { double('id') }
           let(:defaults) { nil }
-          let(:configuration) { instance_double(configuration_class, id: id, class_name: class_name, defaults: defaults) }
+          let(:configuration) { instance_double(configuration_class, id: id, configuration_class: class_name, defaults: defaults) }
 
           before(:each) { allow(test_class).to receive(:configuration).and_return(configuration) }
 
-          context 'when the configuration class name is' do
+          context 'when the configuration class is' do
             context 'nil' do
               let(:class_name) { nil }
               it { is_expected.to be nil }

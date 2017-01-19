@@ -6,7 +6,7 @@ module Elasticsearch
       include Configurable
       include Nameable
 
-      define_configuration class_name: Configuration::Cluster
+      define_configuration class_name: 'Elasticsearch::Resources::Configuration::Cluster'
 
       def initialize(&block)
         configure(&block)

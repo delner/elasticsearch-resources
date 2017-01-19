@@ -8,7 +8,7 @@ module Elasticsearch
       include Nameable
 
       define_configuration \
-        class_name: Configuration::Type,
+        class_name: 'Elasticsearch::Resources::Configuration::Type',
         inherit_from: -> { index.settings.type(self.class.configuration.id) }
 
       ACTIONS = [

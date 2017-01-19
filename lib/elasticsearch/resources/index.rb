@@ -8,7 +8,7 @@ module Elasticsearch
       include Nameable
 
       define_configuration \
-        class_name: Configuration::Index,
+        class_name: 'Elasticsearch::Resources::Configuration::Index',
         inherit_from: -> { cluster.settings.index(self.class.configuration.id) }
 
       def initialize(cluster:, &block)
