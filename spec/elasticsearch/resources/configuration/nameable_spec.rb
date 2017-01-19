@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-describe Elasticsearch::Resources::Nameable do
+describe Elasticsearch::Resources::Configuration::Nameable do
   subject { described_class }
 
   describe 'implemented' do
@@ -28,18 +28,19 @@ describe Elasticsearch::Resources::Nameable do
           it { is_expected.to be nil }
         end
 
-        describe '#matches_name?' do
-          subject { super().matches_name?(name) }
+        describe '#name=' do
+          subject { super().send(:name=, name) }
 
-          context 'given a name that' do
-            context 'matches' do
-              let(:name) { instance.name }
-              it { is_expected.to be true }
+          context 'given an ID that is' do
+            context 'nil' do
+              let(:name) { nil }
+              it { expect { subject }.to raise_error(Elasticsearch::Resources::Configuration::Nameable::NullNameError) }
             end
 
-            context 'doesn\'t match' do
-              let(:name) { 'non-matching_name' }
-              it { is_expected.to be false }
+            context 'a String' do
+              let(:name) { 'test' }
+              it { is_expected.to eq(name) }
+              it { expect { subject }.to change { instance.name }.from(nil).to(name) }
             end
           end
         end

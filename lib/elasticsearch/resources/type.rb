@@ -7,9 +7,7 @@ module Elasticsearch
       include Indexable
       include Nameable
 
-      define_configuration \
-        class_name: Configuration::Type,
-        default: -> { index.settings.type(self.class.configuration.id) }
+      define_configuration class_name: 'Elasticsearch::Resources::Configuration::Type'
 
       ACTIONS = [
         :exists?,
@@ -21,7 +19,7 @@ module Elasticsearch
 
       def initialize(index:, &block)
         self.index = index
-        configure(id: self.class.configuration.id, index: index.settings, &block)
+        configure(&block)
       end
 
       def cluster
@@ -33,7 +31,7 @@ module Elasticsearch
       end
 
       def name
-        settings.name || super
+        settings.name
       end
 
       def query(action, options = {})
@@ -84,16 +82,16 @@ module Elasticsearch
       end
 
       def self.document_class
-        @document_class
+        Object.const_get(@document_class) if @document_class
       end
 
       protected
 
-      def self.define_document_class(document_class)
-        @document_class = document_class
+      def self.define_document(document_class)
+        @document_class = (document_class.class == Class ? document_class.name : document_class)
       end
 
-      define_document_class Elasticsearch::Resources::Document
+      define_document 'Elasticsearch::Resources::Document'
     end
   end
 end

@@ -11,12 +11,12 @@ describe Elasticsearch::Resources::Type do
         it { is_expected.to be(Elasticsearch::Resources::Document) }
       end
 
-      describe '#define_document_class' do
-        subject { super().send(:define_document_class, document_class) }
-        after(:each) { described_class.send(:define_document_class, Elasticsearch::Resources::Document) }
+      describe '#define_document' do
+        subject { super().send(:define_document, 'TestDocumentClass') }
+        after(:each) { described_class.send(:define_document, 'Elasticsearch::Resources::Document') }
 
         let(:document_class) { stub_const 'TestDocumentClass', Class.new }
-        it { is_expected.to be(document_class) }
+        it { is_expected.to eq('TestDocumentClass') }
         it do
           expect { subject }
             .to change { described_class.document_class }
@@ -73,7 +73,7 @@ describe Elasticsearch::Resources::Type do
 
           context 'doesn\'t define a name' do
             before(:each) { expect(instance.settings).to receive(:name).and_return(nil) }
-            it { is_expected.to eq(instance.class.default_name) }
+            it { is_expected.to be nil }
           end
         end
       end

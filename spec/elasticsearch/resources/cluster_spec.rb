@@ -6,6 +6,40 @@ describe Elasticsearch::Resources::Cluster do
 
   describe 'class' do
     describe 'behavior' do
+      context 'that mutates the class' do
+        subject { test_class }
+        let(:test_class) { stub_const 'TestClass', Class.new(described_class) }
+
+        describe '#define_indexes' do
+          subject { super().define_indexes(**indexes) }
+          let(:indexes) { { test: index } }
+
+          context 'given a constant' do
+            let(:index) { Elasticsearch::Resources::Index }
+            it { is_expected.to eq({ test: index.name }) }
+          end
+
+          context 'given a string' do
+            let(:index) { 'Elasticsearch::Resources::Index' }
+            it { is_expected.to eq({ test: index }) }
+          end
+        end
+
+        describe '#indexes' do
+          subject { super().indexes }
+
+          context 'when indexes have' do
+            context 'not been defined' do
+              it { is_expected.to eq({}) }
+            end
+
+            context 'been defined' do
+              before(:each) { test_class.send(:define_indexes, test: 'Elasticsearch::Resources::Index') }
+              it { is_expected.to eq({ test: Elasticsearch::Resources::Index }) }
+            end
+          end
+        end
+      end
     end
   end
 
@@ -31,8 +65,27 @@ describe Elasticsearch::Resources::Cluster do
 
       describe '#indexes' do
         subject { super().indexes }
-        it { is_expected.to be_a_kind_of(Array) }
+        it { is_expected.to be_a_kind_of(Hash) }
         it { is_expected.to be_empty }
+      end
+
+      describe '#build_index' do
+        subject { super().build_index(key: key) }
+        let(:key) { :test_index }
+
+        context 'given a key' do
+          context 'that doesn\'t exist' do
+            it { is_expected.to be nil }
+          end
+
+          context 'that exists' do
+            let(:index_class) { class_double(Elasticsearch::Resources::Index) }
+            let(:index) { instance_double(Elasticsearch::Resources::Index) }
+            before(:each) { allow(instance.class).to receive(:indexes).and_return({ key => index_class }) }
+            before(:each) { allow(index_class).to receive(:new).with(cluster: instance).and_return(index) }
+            it { is_expected.to be(index) }
+          end
+        end
       end
 
       describe '#search' do
@@ -69,7 +122,7 @@ describe Elasticsearch::Resources::Cluster do
 
           context 'contain a matching index' do
             let(:index) { instance_double(Elasticsearch::Resources::Index) }
-            before(:each) { allow(instance).to receive(:indexes).and_return([index]) }
+            before(:each) { allow(instance).to receive(:indexes).and_return({ test: index }) }
             before(:each) { expect(index).to receive(:find_index).with(index: index_name).and_return(index) }
             it { is_expected.to be(index) }
           end

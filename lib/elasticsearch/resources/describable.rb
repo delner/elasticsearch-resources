@@ -8,7 +8,7 @@ module Elasticsearch
 
       module ClassMethods
         def attributes
-          @attributes ||= []
+          @attributes ||= superclass.respond_to?(:attributes) ? superclass.attributes.dup : []
         end
 
         protected
