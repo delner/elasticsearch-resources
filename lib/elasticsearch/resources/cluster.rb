@@ -22,11 +22,19 @@ module Elasticsearch
       end
 
       def indexes
-        @indexes ||= self.class.indexes.collect do |index_class|
-          index_class.new(cluster: self).tap do |index|
-            settings.index(index_class.configuration.id).tap do |settings|
-              index.settings = settings.dup unless settings.nil?
-            end
+        @indexes ||= self.class.indexes.collect do |key, index_class|
+          [
+            key,
+            build_index(key: key)
+          ]
+        end.to_h
+      end
+
+      def build_index(key:, index_class: nil)
+        index_class = self.class.indexes[key] if index_class.nil?
+        index_class&.new(cluster: self).tap do |index|
+          settings.index(key).tap do |settings|
+            index.settings = settings.dup unless settings.nil?
           end
         end
       end
@@ -52,7 +60,7 @@ module Elasticsearch
       end
 
       def find_index(index:)
-        indexes.find do |i|
+        indexes.values.find do |i|
           i.find_index(index: index)
         end
       end
@@ -61,14 +69,18 @@ module Elasticsearch
         find_index(index: index)&.find_type(index: index, type: type)
       end
 
-      protected
-
       def self.indexes
-        (@index_names ||= []).collect { |i| Object.const_get(i) }
+        (@index_names ||= {}).collect do |key, index_name|
+          [key, Object.const_get(index_name)]
+        end.to_h
       end
 
-      def self.define_indexes(*indexes)
-        @index_names = indexes.collect { |i| i.class == Class ? i.name : i }
+      protected
+
+      def self.define_indexes(indexes = {})
+        @index_names = indexes.collect do |key, index|
+          [key.to_sym, index.class == Class ? index.name : index]
+        end.to_h
       end
     end
   end

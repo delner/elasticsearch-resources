@@ -37,11 +37,19 @@ module Elasticsearch
       end
 
       def types
-        @types ||= self.class.types.collect do |type_class|
-          type_class.new(index: self).tap do |type|
-            settings.type(type_class.configuration.id).tap do |settings|
-              type.settings = settings.dup unless settings.nil?
-            end
+        @types ||= self.class.types.collect do |key, type_class|
+          [
+            key,
+            build_type(key: key)
+          ]
+        end.to_h
+      end
+
+      def build_type(key:, type_class: nil)
+        type_class = self.class.types[key] if type_class.nil?
+        type_class&.new(index: self).tap do |type|
+          settings.type(key).tap do |settings|
+            type.settings = settings.dup unless settings.nil?
           end
         end
       end
@@ -108,14 +116,18 @@ module Elasticsearch
         end
       end
 
-      protected
-
       def self.types
-        (@type_names ||= []).collect { |i| Object.const_get(i) }
+        (@type_names ||= {}).collect do |key, type_name|
+          [key, Object.const_get(type_name)]
+        end.to_h
       end
 
-      def self.define_types(*types)
-        @type_names = types.collect { |i| i.class == Class ? i.name : i }
+      protected
+
+      def self.define_types(types = {})
+        @type_names = types.collect do |key, type|
+          [key.to_sym, type.class == Class ? type.name : type]
+        end.to_h
       end
     end
   end

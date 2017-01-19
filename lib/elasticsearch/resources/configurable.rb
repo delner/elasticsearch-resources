@@ -24,8 +24,7 @@ module Elasticsearch
         attr_accessor :settings
 
         def default_settings
-          default_id = self.class.configuration.id
-          self.class.configuration.configuration_class&.new(id: default_id).tap do |s|
+          self.class.configuration.configuration_class&.new.tap do |s|
             defaults_block = self.class.configuration.defaults
             self.instance_exec(s, &defaults_block) if defaults_block
           end
@@ -49,7 +48,7 @@ module Elasticsearch
       end
 
       class Configuration
-        ATTRIBUTES = [:id, :class_name, :inherit_from, :defaults].freeze
+        ATTRIBUTES = [:class_name, :inherit_from, :defaults].freeze
 
         attr_accessor *ATTRIBUTES
 

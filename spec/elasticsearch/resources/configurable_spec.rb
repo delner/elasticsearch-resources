@@ -37,11 +37,6 @@ describe Elasticsearch::Resources::Configurable do
           context 'returns a Configuration with' do
             it { is_expected.to be_a_kind_of(configuration_class) }
 
-            describe '#id' do
-              subject { super().id }
-              it { is_expected.to be nil }
-            end
-
             describe '#class_name' do
               subject { super().class_name }
               it { is_expected.to be nil }
@@ -74,21 +69,18 @@ describe Elasticsearch::Resources::Configurable do
           subject do
             super().send(
               :define_configuration,
-              id: id,
               class_name: class_name,
               inherit_from: inherit_from,
               defaults: defaults
             )
           end
 
-          let(:id) { double('id') }
           let(:class_name) { double('class_name') }
           let(:inherit_from) { double('inherit_from') }
           let(:defaults) { double('defaults') }
 
           let(:test_class_configuration) do
             configuration_class.new.tap do |c|
-              c.id = id
               c.class_name = class_name
               c.inherit_from = inherit_from
               c.defaults = defaults
@@ -111,7 +103,6 @@ describe Elasticsearch::Resources::Configurable do
           context "when the class inherits from a Configurable class" do
             include_context 'inherits from parent Configurable class'
 
-            let(:parent_id) { double('parent id') }
             let(:parent_class_name) { double('parent class_name') }
             let(:parent_inherit_from) { double('parent inherit_from') }
             let(:parent_defaults) { double('parent defaults') }
@@ -119,7 +110,6 @@ describe Elasticsearch::Resources::Configurable do
             before(:each) do
               parent_class.send(
                 :define_configuration,
-                id: parent_id,
                 class_name: parent_class_name,
                 inherit_from: parent_inherit_from,
                 defaults: parent_defaults
@@ -128,7 +118,6 @@ describe Elasticsearch::Resources::Configurable do
 
             let(:parent_class_configuration) do
               configuration_class.new.tap do |c|
-                c.id = parent_id
                 c.class_name = parent_class_name
                 c.inherit_from = parent_inherit_from
                 c.defaults = parent_defaults
@@ -168,9 +157,8 @@ describe Elasticsearch::Resources::Configurable do
       describe 'behavior' do
         describe '#default_settings' do
           subject { super().default_settings }
-          let(:id) { double('id') }
           let(:defaults) { nil }
-          let(:configuration) { instance_double(configuration_class, id: id, configuration_class: class_name, defaults: defaults) }
+          let(:configuration) { instance_double(configuration_class, configuration_class: class_name, defaults: defaults) }
 
           before(:each) { allow(test_class).to receive(:configuration).and_return(configuration) }
 
@@ -183,7 +171,7 @@ describe Elasticsearch::Resources::Configurable do
             context 'a constant' do
               let(:class_name) { double('constant') }
               let(:settings) { instance_double('settings') }
-              before(:each) { allow(class_name).to receive(:new).with(id: id).and_return(settings) }
+              before(:each) { allow(class_name).to receive(:new).and_return(settings) }
               it { is_expected.to be(settings) }
 
               context 'and defaults are defined' do

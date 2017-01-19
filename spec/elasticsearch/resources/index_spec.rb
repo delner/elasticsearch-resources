@@ -11,17 +11,17 @@ describe Elasticsearch::Resources::Index do
         let(:test_class) { stub_const 'TestClass', Class.new(described_class) }
 
         describe '#define_types' do
-          subject { super().define_types(*types) }
-          let(:types) { [type] }
+          subject { super().define_types(**types) }
+          let(:types) { { test: type } }
 
           context 'given a constant' do
             let(:type) { Elasticsearch::Resources::Type }
-            it { is_expected.to eq([type.name]) }
+            it { is_expected.to eq({ test: type.name }) }
           end
 
           context 'given a string' do
             let(:type) { 'Elasticsearch::Resources::Type' }
-            it { is_expected.to eq([type]) }
+            it { is_expected.to eq({ test: type }) }
           end
         end
 
@@ -30,12 +30,12 @@ describe Elasticsearch::Resources::Index do
 
           context 'when types have' do
             context 'not been defined' do
-              it { is_expected.to eq([]) }
+              it { is_expected.to eq({}) }
             end
 
             context 'been defined' do
-              before(:each) { test_class.send(:define_types, 'Elasticsearch::Resources::Type') }
-              it { is_expected.to eq([Elasticsearch::Resources::Type]) }
+              before(:each) { test_class.send(:define_types, test: 'Elasticsearch::Resources::Type') }
+              it { is_expected.to eq({ test: Elasticsearch::Resources::Type }) }
             end
           end
         end
@@ -128,8 +128,27 @@ describe Elasticsearch::Resources::Index do
 
       describe '#types' do
         subject { super().types }
-        it { is_expected.to be_a_kind_of(Array) }
+        it { is_expected.to be_a_kind_of(Hash) }
         it { is_expected.to be_empty }
+      end
+
+      describe '#build_type' do
+        subject { super().build_type(key: key) }
+        let(:key) { :test_type }
+
+        context 'given a key' do
+          context 'that doesn\'t exist' do
+            it { is_expected.to be nil }
+          end
+
+          context 'that exists' do
+            let(:type_class) { class_double(Elasticsearch::Resources::Type) }
+            let(:type) { instance_double(Elasticsearch::Resources::Type) }
+            before(:each) { allow(instance.class).to receive(:types).and_return({ key => type_class }) }
+            before(:each) { allow(type_class).to receive(:new).with(index: instance).and_return(type) }
+            it { is_expected.to be(type) }
+          end
+        end
       end
 
       describe '#query_index' do
