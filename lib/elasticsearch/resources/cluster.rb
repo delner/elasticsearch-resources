@@ -4,7 +4,6 @@ module Elasticsearch
       include Resource
       include Queryable
       include Configurable
-      include Nameable
 
       define_configuration class_name: 'Elasticsearch::Resources::Configuration::Cluster'
 
