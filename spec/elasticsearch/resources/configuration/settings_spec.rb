@@ -12,22 +12,9 @@ describe Elasticsearch::Resources::Configuration::Settings do
   describe 'instance' do
     subject { instance }
 
-    let(:instance) { described_class.new(id: id) }
-    let(:id) { double('id') }
+    let(:instance) { described_class.new }
 
     describe 'behavior' do
-      describe '#initialize' do
-        context 'returns a Settings object with' do
-          describe '#id' do
-            subject { super().id }
-            it { is_expected.to eq(id) }
-          end
-        end
-      end
-
-      describe '#id' do
-        it { is_expected.to respond_to(:id) }
-      end
     end
   end
 end

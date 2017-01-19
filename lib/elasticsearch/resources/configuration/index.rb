@@ -8,8 +8,8 @@ module Elasticsearch
           @types ||= default_types
         end
 
-        def type(id)
-          types.find { |t| t.id == id.to_sym }.tap do |t|
+        def type(key)
+          types[key.to_sym].tap do |t|
             yield(t) if block_given? && !t.nil?
           end
         end
@@ -17,7 +17,7 @@ module Elasticsearch
         protected
 
         def default_types
-          []
+          {}
         end
       end
     end
