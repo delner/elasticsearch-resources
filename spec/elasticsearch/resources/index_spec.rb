@@ -6,6 +6,40 @@ describe Elasticsearch::Resources::Index do
 
   describe 'class' do
     describe 'behavior' do
+      context 'that mutates the class' do
+        subject { test_class }
+        let(:test_class) { stub_const 'TestClass', Class.new(described_class) }
+
+        describe '#define_types' do
+          subject { super().define_types(*types) }
+          let(:types) { [type] }
+
+          context 'given a constant' do
+            let(:type) { Elasticsearch::Resources::Type }
+            it { is_expected.to eq([type.name]) }
+          end
+
+          context 'given a string' do
+            let(:type) { 'Elasticsearch::Resources::Type' }
+            it { is_expected.to eq([type]) }
+          end
+        end
+
+        describe '#types' do
+          subject { super().types }
+
+          context 'when types have' do
+            context 'not been defined' do
+              it { is_expected.to eq([]) }
+            end
+
+            context 'been defined' do
+              before(:each) { test_class.send(:define_types, 'Elasticsearch::Resources::Type') }
+              it { is_expected.to eq([Elasticsearch::Resources::Type]) }
+            end
+          end
+        end
+      end
     end
   end
 

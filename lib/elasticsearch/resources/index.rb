@@ -7,9 +7,7 @@ module Elasticsearch
       include Clusterable
       include Nameable
 
-      define_configuration \
-        class_name: 'Elasticsearch::Resources::Configuration::Index',
-        inherit_from: -> { cluster.settings.index(self.class.configuration.id) }
+      define_configuration class_name: 'Elasticsearch::Resources::Configuration::Index'
 
       def initialize(cluster:, &block)
         self.cluster = cluster
@@ -39,7 +37,13 @@ module Elasticsearch
       end
 
       def types
-        []
+        @types ||= self.class.types.collect do |type_class|
+          type_class.new(index: self).tap do |type|
+            settings.type(type_class.configuration.id).tap do |settings|
+              type.settings = settings.dup unless settings.nil?
+            end
+          end
+        end
       end
 
       def query_index(action, options = {})
@@ -102,6 +106,16 @@ module Elasticsearch
         types.find do |t|
           t.find_type(type: type)
         end
+      end
+
+      protected
+
+      def self.types
+        (@type_names ||= []).collect { |i| Object.const_get(i) }
+      end
+
+      def self.define_types(*types)
+        @type_names = types.collect { |i| i.class == Class ? i.name : i }
       end
     end
   end
